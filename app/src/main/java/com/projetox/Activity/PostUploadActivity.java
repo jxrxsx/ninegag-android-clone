@@ -1,11 +1,15 @@
 package com.projetox.Activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
@@ -27,6 +31,12 @@ import com.projetox.Model.Categoria;
 import com.projetox.SQLiteHelper.DatabaseHelper;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class PostUploadActivity extends AppCompatActivity {
@@ -38,7 +48,6 @@ public class PostUploadActivity extends AppCompatActivity {
     private ImageView imagemPost;
     private ImageButton btnSalvarPost;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private SQLiteDatabase bd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,29 +68,35 @@ public class PostUploadActivity extends AppCompatActivity {
         btnSalvarPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Usuario userLogado = new Usuario(1,"Amanda", "mayuzera", "mayu@gmail.com","soader123", 0);
-                Categoria categoriaSelec = new Categoria(1, "DOGO");
+                Usuario userLogado = dbHelper.findUsuarioByID(1);
+                Categoria categoriaSelec = dbHelper.findCategoriaByID(1);
                 Post novoPost = new Post();
-                novoPost.setId(1);
                 novoPost.setTitulo(tvTitulo.getText().toString());
                 novoPost.setUsuario(userLogado);
                 novoPost.setCategoria(categoriaSelec);
-                novoPost.setImagem(imagemPost);
                 novoPost.setMediaVotos(new Double(0));
 
 
-                dbHelper.persistUsuario(userLogado);
-                dbHelper.persistCategoria(categoriaSelec);
-                dbHelper.persistPost(novoPost);
 
-                Toast.makeText(getApplicationContext(), "SALVOU POST NO BANCO",Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), "SALVOU POST NO BANCO",Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), "SALVOU POST NO BANCO",Toast.LENGTH_LONG).show();
+
+                //salva a imagem na memória interna e o caminho dela no banco
+                Bitmap bitmap = ((BitmapDrawable) imagemPost.getDrawable()).getBitmap();
+                try {
+                    novoPost.setCaminhoImagem(saveToInternalStorage(bitmap));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                boolean respPost;
+                respPost = dbHelper.persistPost(novoPost);
+                if (respPost == true){
+                    Toast.makeText(getApplicationContext(), "SALVOOOOUUU POOOOSTTT", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         //checa permissioes do aparelho e abre a chama função pra abrir a galeria
-        if (EasyPermissions.hasPermissions(getApplicationContext(), galleryPermissions)) {
+                                             if (EasyPermissions.hasPermissions(getApplicationContext(), galleryPermissions)) {
             Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
             final int ACTIVITY_SELECT_IMAGE = 1234;
             startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
@@ -117,4 +132,27 @@ public class PostUploadActivity extends AppCompatActivity {
         }
 
     }
+
+    private String saveToInternalStorage(Bitmap bitmapImage) throws IOException {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory,"profile.jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            fos.close();
+        }
+        return directory.getAbsolutePath();
+    }
+
+
+
 }

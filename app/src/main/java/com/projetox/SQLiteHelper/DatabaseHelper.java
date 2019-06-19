@@ -12,14 +12,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.projetox.Adapter.AdapterPost;
 import com.projetox.Model.Categoria;
 import com.projetox.Model.Post;
 import com.projetox.Model.Usuario;
+import com.projetox.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -28,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 10;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -55,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TITULO = "titulo";
     private static final String MEDIA_VOTOS = "media_votos";
     private static final String IMAGEM = "imagem";
+    private static final String CAMINHO_IMAGEM = "caminho_imagem";
 
     // colunas da tabela CATEGORIA
     private static final String NOME_CATEGORIA = "nome_categoria";
@@ -94,7 +101,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ID_CATEGORIA_POST + " INTEGER,"
             + TITULO + " VARCHAR,"
             + MEDIA_VOTOS + " REAL DEFAULT 0,"
-            + IMAGEM + " BLOB,"
+            + IMAGEM + " VARCHAR,"
+            + CAMINHO_IMAGEM + " VARCHAR,"
             + "FOREIGN KEY (" + ID_USUARIO_POST
                 + ") REFERENCES " + TABLE_USUARIO + "("+ID+"), "
             + "FOREIGN KEY (" + ID_CATEGORIA_POST
@@ -150,22 +158,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(ID_USUARIO_POST, post.getId());
         values.put(ID_USUARIO_POST, post.getUsuario().getId());
         values.put(ID_CATEGORIA_POST, post.getCategoria().getId());
         values.put(TITULO, post.getTitulo());
         values.put(MEDIA_VOTOS, post.getMediaVotos());
-
-        BitmapDrawable drawable = (BitmapDrawable) post.getImagem().getDrawable();
-        Bitmap bitmapImagem = drawable.getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmapImagem.compress(Bitmap.CompressFormat.PNG, 100, baos); // Could be Bitmap.CompressFormat.PNG or Bitmap.CompressFormat.WEBP
-        byte[] bai = baos.toByteArray();
-
-        values.put(IMAGEM, bai);
+        values.put(CAMINHO_IMAGEM, post.getCaminhoImagem());
 
         // insert
         long resposta = db.insert(TABLE_POST, null, values);
+            db.close();
 
         if(resposta != -1){
             Log.d(LOG, "POST SALVO NO BANCO");
@@ -182,47 +183,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<Post> getAllPosts() {
         ArrayList<Post> listaPosts = new ArrayList<Post>();
-        int idUsuario, idCategoria;
-        ImageView imagemSalva = null;
+        int idUsuario, idCategoria, count = 0;
+        Usuario usuario = new Usuario();
+        Categoria categoria = new Categoria();
 
-        String selectQuery = "SELECT  * FROM " + TABLE_POST;
+        String selectQuery = "SELECT * FROM " + TABLE_POST;
 
-        Log.e(LOG, selectQuery);
+        Log.d(LOG, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        c.moveToFirst();
+        Log.d(LOG,"quantidade de linhas da consulta: "+c.getCount());
         if (c != null) {
-
-            do {
+            c.moveToFirst();
+            while(c.moveToNext()){
                 Post post = new Post();
-                //Usuario usuario = findUsuarioByID()
-                //Categoria categoria = new Categoria();
 
-               // idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_POST)));
-                //idCategoria = c.getInt((c.getColumnIndex(ID_CATEGORIA_POST)));
+                idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_POST)));
+                Log.d(LOG, "idUsuario: "+idUsuario);
+                idCategoria = c.getInt((c.getColumnIndex(ID_CATEGORIA_POST)));
 
-                idUsuario = 1;
-                idCategoria = 1;
 
-                post.setId(c.getInt(c.getColumnIndex(ID)));
-                post.setUsuario(findUsuarioByID(idUsuario));
-                post.setCategoria(findCategoriaByID(idCategoria));
+                usuario = findUsuarioByID(idUsuario);
+                categoria = findCategoriaByID(idCategoria);
+
+                post.setId(idUsuario);
+                post.setUsuario(usuario);
+                post.setCategoria(categoria);
                 post.setTitulo((c.getString(c.getColumnIndex(TITULO))));
                 post.setMediaVotos((c.getDouble(c.getColumnIndex(MEDIA_VOTOS))));
-
-                Bitmap bm = BitmapFactory.decodeByteArray((c.getBlob(c.getColumnIndex(IMAGEM))), 0, (c.getBlob(c.getColumnIndex(IMAGEM))).length);
-                imagemSalva.setImageBitmap(bm);
-
-                post.setImagem(imagemSalva);
+                post.setCaminhoImagem((c.getString(c.getColumnIndex(CAMINHO_IMAGEM))));
+                post.setImagem(post.getImagem());
 
                 // add na lista de posts
                 listaPosts.add(post);
-            } while (c.moveToNext());
-        }
+                Log.d(LOG, "Adicionou post na lista");
 
+
+            }
+        }
+        else{
+            Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
+        }
+        db.close();
         return listaPosts;
     }
 
@@ -234,20 +239,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
-            values.put(ID, usuario.getId());
             values.put(NOME_USUARIO, usuario.getNome());
             values.put(USERNAME, usuario.getUser());
             values.put(EMAIL, usuario.getEmail());
+            values.put(SENHA, usuario.getSenha());
             values.put(EH_ADMIN, usuario.getEhAdmin());
 
             // insert
             long resposta = db.insert(TABLE_USUARIO, null, values);
-
+            db.close();
             if(resposta != -1){
                 Log.d(LOG, "USUARIO SALVO NO BANCO");
-                Log.e(LOG, "USUARIO SALVO NO BANCO");
-                Log.i(LOG, "USUARIO SALVO NO BANCO");
-                Log.v(LOG, "USUARIO SALVO NO BANCO");
+                Log.d(LOG, "USUARIO SALVO NO BANCO");
+                Log.d(LOG, "USUARIO SALVO NO BANCO");
+                Log.d(LOG, "USUARIO SALVO NO BANCO");
                 return true;
             }
             else
@@ -260,14 +265,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //buscar usuário pelo ID
-    public Usuario findUsuarioByID(Integer idUsuario) {
+    public Usuario findUsuarioByID(int idUsuario) {
         SQLiteDatabase db = this.getReadableDatabase();
-
+        int count = 0;
         String selectQuery = "SELECT  * FROM " + TABLE_USUARIO + " WHERE " + ID + " = " + idUsuario;
 
-        Log.e(LOG, selectQuery);
+        Log.d(LOG, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
+        Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
         Usuario usuario = new Usuario();
         if (c != null) {
             c.moveToFirst();
@@ -279,7 +285,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
             usuario.setEhAdmin((c.getInt(c.getColumnIndex(EH_ADMIN))));
         }
+        count = c.getCount();
         c.close();
+        db.close();
         return usuario;
     }
 
@@ -291,14 +299,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
-            values.put(ID, categoria.getId());
             values.put(NOME_CATEGORIA, categoria.getNome());
 
             // insert
             long resposta = db.insert(TABLE_CATEGORIA, null, values);
-
-            if(resposta != -1)
+            db.close();
+            if(resposta != -1){
+                Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
+                Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
+                Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
                 return true;
+            }
             else
                 return false;
         }
@@ -308,9 +319,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Categoria findCategoriaByID(Integer idCategoria) {
+    public Categoria findCategoriaByID(int idCategoria) {
         SQLiteDatabase db = this.getReadableDatabase();
-
+        int count = 0;
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORIA + " WHERE "
                 + ID + " = " + idCategoria;
 
@@ -318,14 +329,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if (c != null)
-            c.moveToFirst();
-
         Categoria categoria = new Categoria();
-        categoria.setId((c.getInt(c.getColumnIndex(ID))));
-        categoria.setNome((c.getString(c.getColumnIndex(NOME_CATEGORIA))));
+        if (c != null) {
+            c.moveToFirst();
+            while (c.moveToNext()) {
+                categoria = new Categoria();
+                categoria.setId((c.getInt(c.getColumnIndex(ID))));
+                categoria.setNome((c.getString(c.getColumnIndex(NOME_CATEGORIA))));
+            }
+        }
+        else{
+            return null;
+        }
 
-
+        db.close();
         return categoria;
     }
 }
