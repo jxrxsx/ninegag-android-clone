@@ -10,18 +10,14 @@ public class Post {
     private Double mediaVotos;
     private ImageView imagem;
     private String caminhoImagem;
+    private String nomeImagem;
 
     public Post(){
 
     }
 
-    public Post(String titulo, ImageView imagem, String caminhoImagem) {
-        this.titulo = titulo;
-        this.imagem = imagem;
-        this.caminhoImagem = caminhoImagem;
-    }
 
-    public Post(Usuario usuario, Categoria categoria, String titulo, ImageView imagem, String caminhoImagem) {
+    public Post(Usuario usuario, Categoria categoria, String titulo, ImageView imagem, String nomeImagem, String caminhoImagem) {
         this.usuario = usuario;
         this.categoria = categoria;
         this.titulo = titulo;
@@ -83,6 +79,14 @@ public class Post {
 
     public void setCaminhoImagem(String caminhoImagem){
         this.caminhoImagem = caminhoImagem;
+    }
+
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
     }
 }
 

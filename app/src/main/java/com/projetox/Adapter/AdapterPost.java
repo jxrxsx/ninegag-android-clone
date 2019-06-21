@@ -57,7 +57,7 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         // Como setamos a quantidade de elementos para lista.size()
         // i vai de 0 a lista.size
 
-        myViewHolder.imagem.setImageDrawable((loadImageFromStorage(listaPosts.get(i).getCaminhoImagem(), myViewHolder.imagem)));
+        myViewHolder.imagem.setImageDrawable((loadImageFromStorage(listaPosts.get(i).getCaminhoImagem(), myViewHolder.imagem, listaPosts.get(i).getNomeImagem())));
         myViewHolder.user.setText(listaPosts.get(i).getUsuario().getNome());
         myViewHolder.titulo.setText(listaPosts.get(i).getTitulo());
         myViewHolder.categoria.setText(listaPosts.get(i).getCategoria().getNome());
@@ -102,10 +102,13 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         }
     }
 
-    private Drawable loadImageFromStorage(String path, ImageView imagemSalva)
+    private Drawable loadImageFromStorage(String path, ImageView imagemSalva, String nomeImagem)
     {
         try {
-            File f = new File(path, "profile.jpg");
+            File f = new File(path, nomeImagem);
+            Log.d(TAG, "caminho da pasta: "+ path);
+            Log.d(TAG, "caminho da pasta: "+ path);
+            Log.d(TAG, "caminho da pasta: "+ path);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
 
             imagemSalva.setImageBitmap(b);

@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.webkit.PermissionRequest;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.projetox.Adapter.AdapterPost;
@@ -42,6 +43,7 @@ import com.projetox.R;
 import com.projetox.SQLiteHelper.DatabaseHelper;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,18 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
 
-     /*   Usuario usuario1 = new Usuario("isabel", "bel", "bel@gmail.com", "123", 0);
-        Usuario usuario2 = new Usuario("jonatan", "jon", "jon@gmail.com", "123", 1);
-        Categoria categoria1 = new Categoria("dogo");
-        Categoria categoria2 = new Categoria("narutinho");
-        dbHelper.persistCategoria(categoria1);
-        dbHelper.persistCategoria(categoria2);
-        dbHelper.persistUsuario(usuario1);
-        dbHelper.persistUsuario(usuario2);
+        fazInsercoesIniciais();
 
-        Log.d(LOG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
-        Log.d(LOG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
-    */
 
         recyclerDados = findViewById(R.id.rvPosts);
         postUpload = findViewById(R.id.fabPostUpload);
@@ -146,6 +138,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         );*/
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
+
+        posts = dbHelper.getAllPosts();
+        Log.d(LOG, "lista de posta: "+posts.toArray().toString());
+
+        // Configurar adapter
+        AdapterPost adapter = new AdapterPost(posts);
+        Log.d(LOG, "passou da dbHelper.getAllPosts()");
+
+        // Configurar RecyclerView
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerDados.setLayoutManager(layoutManager);
+        // fixa o tamanho para otimizar
+        recyclerDados.setHasFixedSize(true);
+
+        // adiciona linha separadora dos elementos
+        recyclerDados.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
+
+        recyclerDados.setAdapter(adapter);
+
+
+    }
 
 
     @Override
@@ -203,6 +220,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void fazInsercoesIniciais(){
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        Usuario usuario = new Usuario("jonatan", "jon", "jon@gmail.com", "123", 1);
+        ArrayList<Categoria> categorias = new ArrayList<>();
+
+        Categoria c1 = new Categoria("dogo");
+        Categoria c2 = new Categoria("narutinho");
+        Categoria c3 = new Categoria("got");
+        Categoria c4 = new Categoria("nsfw");
+        Categoria c5 = new Categoria("food");
+        Categoria c6 = new Categoria("pokémin");
+        Categoria c7 = new Categoria("wtf");
+        Categoria c8 = new Categoria("star wars");
+
+        categorias.add(c1);
+        categorias.add(c2);
+        categorias.add(c3);
+        categorias.add(c4);
+        categorias.add(c5);
+        categorias.add(c6);
+        categorias.add(c7);
+        categorias.add(c8);
+
+        dbHelper.persistUsuario(usuario);
+        dbHelper.persistCategorias(categorias);
+
+        Log.d(LOG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
     }
 
 

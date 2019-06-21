@@ -16,6 +16,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,6 +49,7 @@ public class PostUploadActivity extends AppCompatActivity {
     private ImageView imagemPost;
     private ImageButton btnSalvarPost;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String TAG = "PostUploadActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,20 +71,22 @@ public class PostUploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Usuario userLogado = dbHelper.findUsuarioByID(1);
-                Categoria categoriaSelec = dbHelper.findCategoriaByID(1);
+                Categoria categoriaSelec = dbHelper.findCategoriaByID(categoria.getSelectedItemPosition());
                 Post novoPost = new Post();
                 novoPost.setTitulo(tvTitulo.getText().toString());
                 novoPost.setUsuario(userLogado);
                 novoPost.setCategoria(categoriaSelec);
                 novoPost.setMediaVotos(new Double(0));
-
-
+                novoPost.setNomeImagem("post"+dbHelper.findLastPostID());
+                Log.d(TAG, "LastPostID: "+dbHelper.findLastPostID());
+                Log.d(TAG, "LastPostID: "+dbHelper.findLastPostID());
+                Log.d(TAG, "nome da imagem do post: "+novoPost.getNomeImagem());
 
 
                 //salva a imagem na memória interna e o caminho dela no banco
                 Bitmap bitmap = ((BitmapDrawable) imagemPost.getDrawable()).getBitmap();
                 try {
-                    novoPost.setCaminhoImagem(saveToInternalStorage(bitmap));
+                    novoPost.setCaminhoImagem(saveToInternalStorage(bitmap, novoPost.getNomeImagem()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -95,9 +99,10 @@ public class PostUploadActivity extends AppCompatActivity {
             }
         });
 
-        //checa permissioes do aparelho e abre a chama função pra abrir a galeria
-                                             if (EasyPermissions.hasPermissions(getApplicationContext(), galleryPermissions)) {
+        //checa permissioes do aparelho e chama função pra abrir a galeria
+        if (EasyPermissions.hasPermissions(getApplicationContext(), galleryPermissions)) {
             Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+            intent.putExtra(Intent.EXTRA_COMPONENT_NAME, MediaStore.Images.Media.DISPLAY_NAME);
             final int ACTIVITY_SELECT_IMAGE = 1234;
             startActivityForResult(intent, ACTIVITY_SELECT_IMAGE);
         } else {
@@ -133,12 +138,13 @@ public class PostUploadActivity extends AppCompatActivity {
 
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage) throws IOException {
+    private String saveToInternalStorage(Bitmap bitmapImage, String nomeImagem) throws IOException {
+        Log.d(TAG, "nome da imagem que chegou na SaveToInternalStorage: "+nomeImagem);
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         // Create imageDir
-        File mypath = new File(directory,"profile.jpg");
+        File mypath = new File(directory, nomeImagem);
 
         FileOutputStream fos = null;
         try {

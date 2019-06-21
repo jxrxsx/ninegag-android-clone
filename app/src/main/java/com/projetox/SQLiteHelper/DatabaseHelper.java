@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 15;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -62,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String MEDIA_VOTOS = "media_votos";
     private static final String IMAGEM = "imagem";
     private static final String CAMINHO_IMAGEM = "caminho_imagem";
+    private static final String NOME_IMAGEM = "nome_imagem";
 
     // colunas da tabela CATEGORIA
     private static final String NOME_CATEGORIA = "nome_categoria";
@@ -103,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + MEDIA_VOTOS + " REAL DEFAULT 0,"
             + IMAGEM + " VARCHAR,"
             + CAMINHO_IMAGEM + " VARCHAR,"
+            + NOME_IMAGEM + " VARCHAR,"
             + "FOREIGN KEY (" + ID_USUARIO_POST
                 + ") REFERENCES " + TABLE_USUARIO + "("+ID+"), "
             + "FOREIGN KEY (" + ID_CATEGORIA_POST
@@ -163,6 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TITULO, post.getTitulo());
         values.put(MEDIA_VOTOS, post.getMediaVotos());
         values.put(CAMINHO_IMAGEM, post.getCaminhoImagem());
+        values.put(NOME_IMAGEM, post.getNomeImagem());
 
         // insert
         long resposta = db.insert(TABLE_POST, null, values);
@@ -181,6 +184,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    //buscar post pelo ID
+    public Post findPostByID(int idPost) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int count = 0;
+        int idUsuario, idCategoria;
+        Usuario usuario = new Usuario();
+        Categoria categoria = new Categoria();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_POST + " WHERE " + ID + " = " + idPost;
+
+        Log.d(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+        Log.d(LOG, "resultado da consulta de post pelo ID: "+c.getCount());
+        Post post = new Post();
+        if (c != null) {
+            c.moveToFirst();
+
+            idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_POST)));
+            idCategoria = c.getInt((c.getColumnIndex(ID_CATEGORIA_POST)));
+
+            usuario = findUsuarioByID(idUsuario);
+            categoria = findCategoriaByID(idCategoria);
+
+            post.setId(c.getInt(c.getColumnIndex(ID)));
+            post.setUsuario(usuario);
+            post.setCategoria(categoria);
+            post.setTitulo((c.getString(c.getColumnIndex(TITULO))));
+            post.setMediaVotos((c.getDouble(c.getColumnIndex(MEDIA_VOTOS))));
+            post.setCaminhoImagem((c.getString(c.getColumnIndex(CAMINHO_IMAGEM))));
+            post.setNomeImagem(c.getString(c.getColumnIndex(NOME_IMAGEM)));
+        }
+
+        db.close();
+
+        return post;
+    }
+
+    //buscar post pelo ID
+    public Integer findLastPostID() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int count = 0;
+        Integer idPost;
+
+        String selectQuery = "SELECT  * FROM " + TABLE_POST;
+
+        Log.d(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        Post post = new Post();
+        if (c != null && c.getCount() != 0) {
+            c.moveToLast();
+            idPost = c.getInt(c.getColumnIndex(ID));
+        }
+        else
+            idPost = 0;
+
+        db.close();
+
+        return idPost;
+    }
+
+
+
     public ArrayList<Post> getAllPosts() {
         ArrayList<Post> listaPosts = new ArrayList<Post>();
         int idUsuario, idCategoria, count = 0;
@@ -195,7 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
-        Log.d(LOG,"quantidade de linhas da consulta: "+c.getCount());
+        Log.d(LOG,"quantidade de posts cadastrados: "+c.getCount());
         if (c != null) {
             c.moveToFirst();
             while(c.moveToNext()){
@@ -209,13 +277,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 usuario = findUsuarioByID(idUsuario);
                 categoria = findCategoriaByID(idCategoria);
 
-                post.setId(idUsuario);
+                post.setId(c.getInt(c.getColumnIndex(ID)));
                 post.setUsuario(usuario);
                 post.setCategoria(categoria);
                 post.setTitulo((c.getString(c.getColumnIndex(TITULO))));
                 post.setMediaVotos((c.getDouble(c.getColumnIndex(MEDIA_VOTOS))));
                 post.setCaminhoImagem((c.getString(c.getColumnIndex(CAMINHO_IMAGEM))));
-                post.setImagem(post.getImagem());
+                post.setNomeImagem(c.getString(c.getColumnIndex(NOME_IMAGEM)));
 
                 // add na lista de posts
                 listaPosts.add(post);
@@ -285,8 +353,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
             usuario.setEhAdmin((c.getInt(c.getColumnIndex(EH_ADMIN))));
         }
-        count = c.getCount();
-        c.close();
+
         db.close();
         return usuario;
     }
@@ -319,11 +386,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    // cadastra lista de categorias
+    public boolean persistCategorias(ArrayList<Categoria> categorias) {
+        try{
+
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            long resposta = 0;
+
+            for(Categoria c : categorias){
+                values.put(NOME_CATEGORIA, c.getNome());
+
+                // insert
+                resposta = db.insert(TABLE_CATEGORIA, null, values);
+            }
+
+            db.close();
+            if(resposta != -1){
+                Log.d(LOG, "SALVOU LISTA DE CATEGORIA NO BANCO");
+                return true;
+            }
+            else
+                return false;
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public Categoria findCategoriaByID(int idCategoria) {
         SQLiteDatabase db = this.getReadableDatabase();
         int count = 0;
-        String selectQuery = "SELECT  * FROM " + TABLE_CATEGORIA + " WHERE "
-                + ID + " = " + idCategoria;
+        String selectQuery = "SELECT * FROM " + TABLE_CATEGORIA + " WHERE " + ID + " = " + idCategoria;
+
+        String queryTeste = "SELECT * FROM " + TABLE_CATEGORIA;
+
+        Cursor c1 = db.rawQuery(queryTeste, null);
+        c1.moveToFirst();
+        while(c1.moveToNext()){
+            int id = c1.getInt(c1.getColumnIndex(ID));
+            Log.d(LOG, "id das categorias cadastradas: "+id);
+        }
 
         Log.e(LOG, selectQuery);
 
@@ -345,4 +450,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return categoria;
     }
+
 }
