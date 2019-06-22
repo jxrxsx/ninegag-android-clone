@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<Post> posts = new ArrayList<Post>();
     private FloatingActionButton postUpload;
     private ImageView imageView;
-    private static final String LOG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
 
-        fazInsercoesIniciais();
+        //fazInsercoesIniciais();
 
 
         recyclerDados = findViewById(R.id.rvPosts);
@@ -99,11 +99,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Chama função que busca todos os posts cadastrados para mostrar na recycler view
         posts = dbHelper.getAllPosts();
-        Log.d(LOG, "lista de posta: "+posts.toArray().toString());
+        Log.d(TAG, "lista de posta: "+posts.toArray().toString());
 
         // Configurar adapter
         AdapterPost adapter = new AdapterPost(posts);
-        Log.d(LOG, "passou da dbHelper.getAllPosts()");
+        Log.d(TAG, "passou da dbHelper.getAllPosts()");
 
         // Configurar RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -144,11 +144,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
 
         posts = dbHelper.getAllPosts();
-        Log.d(LOG, "lista de posta: "+posts.toArray().toString());
+        Log.d(TAG, "lista de posta: "+posts.toArray().toString());
 
         // Configurar adapter
         AdapterPost adapter = new AdapterPost(posts);
-        Log.d(LOG, "passou da dbHelper.getAllPosts()");
+        Log.d(TAG, "passou da dbHelper.getAllPosts()");
 
         // Configurar RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dbHelper.persistUsuario(usuario);
         dbHelper.persistCategorias(categorias);
 
-        Log.d(LOG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
+        Log.d(TAG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
     }
 
 

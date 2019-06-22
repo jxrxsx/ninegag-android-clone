@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 16;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -250,16 +251,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public ArrayList<Post> getAllPosts() {
+
         ArrayList<Post> listaPosts = new ArrayList<Post>();
         int idUsuario, idCategoria, count = 0;
         Usuario usuario = new Usuario();
         Categoria categoria = new Categoria();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try{
 
         String selectQuery = "SELECT * FROM " + TABLE_POST;
 
         Log.d(LOG, selectQuery);
 
-        SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
 
         // looping through all rows and adding to list
@@ -296,6 +300,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
         }
         db.close();
+        }
+        catch(SQLiteException e){
+            e.printStackTrace();
+            db.close();
+        }
         return listaPosts;
     }
 
@@ -335,27 +344,88 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //buscar usuário pelo ID
     public Usuario findUsuarioByID(int idUsuario) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int count = 0;
-        String selectQuery = "SELECT  * FROM " + TABLE_USUARIO + " WHERE " + ID + " = " + idUsuario;
-
-        Log.d(LOG, selectQuery);
-
-        Cursor c = db.rawQuery(selectQuery, null);
-        Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
         Usuario usuario = new Usuario();
-        if (c != null) {
-            c.moveToFirst();
+        try{
 
-            usuario.setId((c.getInt(c.getColumnIndex(ID))));
-            usuario.setNome((c.getString(c.getColumnIndex(NOME_USUARIO))));
-            usuario.setEmail((c.getString(c.getColumnIndex(EMAIL))));
-            usuario.setUser((c.getString(c.getColumnIndex(USERNAME))));
-            usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
-            usuario.setEhAdmin((c.getInt(c.getColumnIndex(EH_ADMIN))));
+            int count = 0;
+            String selectQuery = "SELECT  * FROM " + TABLE_USUARIO + " WHERE " + ID + " = " + idUsuario;
+
+            Log.d(LOG, selectQuery);
+
+            Cursor c = db.rawQuery(selectQuery, null);
+            Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+
+                usuario.setId((c.getInt(c.getColumnIndex(ID))));
+                usuario.setNome((c.getString(c.getColumnIndex(NOME_USUARIO))));
+                usuario.setEmail((c.getString(c.getColumnIndex(EMAIL))));
+                usuario.setUser((c.getString(c.getColumnIndex(USERNAME))));
+                usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
+                usuario.setEhAdmin((c.getInt(c.getColumnIndex(EH_ADMIN))));
+            }
+
+            db.close();
+            return usuario;
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+            return usuario;
+        }
+    }
+
+    public boolean findUsuarioByEmail(String email){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try{
+            String query = "SELECT email FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = " + email;
+            Cursor c = db.rawQuery(query, null);
+
+            if (c.getCount() != 0) {
+                Log.d(LOG, c.getString(c.getColumnIndex(NOME_USUARIO)));
+                db.close();
+                return true;
+            }
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+            return false;
         }
 
         db.close();
-        return usuario;
+        return false;
+    }
+
+    public boolean validaUsuarioLogin(String email, String senha){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Usuario usuario = new Usuario();
+        try{
+            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = '" + email +"'";
+
+            Cursor c = db.rawQuery(query, null);
+            Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
+            return true;
+         /*   if (c.getCount() != 0) {
+                c.moveToFirst();
+
+                usuario.setEmail((c.getString(c.getColumnIndex(EMAIL))));
+                usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
+
+                if(usuario.getEmail() == email && usuario.getSenha() == senha){
+                    Log.d(LOG, "EXISTE USUARIO COM EMAIL E SENHA DIGITADO, VAI RETORNAR TRUE");
+                    db.close();
+                    return true;
+                }
+            }
+            */
+        }
+        catch (SQLiteException e){
+            Log.d(LOG, "deu merda na validação dos dados do usuario");
+            e.printStackTrace();
+            db.close();
+            return false;
+        }
+
     }
 
     //************************************************** CATEGORIA DATABASE FUNCTIONS *************************************//
