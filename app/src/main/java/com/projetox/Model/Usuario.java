@@ -28,6 +28,13 @@ public class Usuario {
         this.ehAdmin = ehAdmin;
     }
 
+    public Usuario(String nome, String email, String senha, Integer ehAdmin){
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.ehAdmin = ehAdmin;
+    }
+
     public void setId(Integer id){
         this.id = id;
     }

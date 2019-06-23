@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*********************************  FIM DO LAYOUT PRONTO *********************************************/
 
         /********************************* INICIO CÓDIGO ****************************************************/
-
+        Toast.makeText(getApplicationContext(), "AAAWWWWW YEA, WELCOME BACK!", Toast.LENGTH_SHORT).show();
         DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
 
         //fazInsercoesIniciais();

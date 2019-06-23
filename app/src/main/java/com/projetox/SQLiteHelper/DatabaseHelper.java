@@ -35,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 20;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -248,8 +248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return idPost;
     }
 
-
-
+    //carrega lista de posts pra mostrar na página inicial
     public ArrayList<Post> getAllPosts() {
 
         ArrayList<Post> listaPosts = new ArrayList<Post>();
@@ -312,33 +311,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean persistUsuario(Usuario usuario) {
         try{
+                boolean taSalvo = verificaUsuarioCadastrado(usuario.getEmail());
+                //se a resposta for false, significa que pode cadastrar o usuário
+                if(taSalvo == false){
+                    SQLiteDatabase db = this.getWritableDatabase();
 
-            SQLiteDatabase db = this.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put(NOME_USUARIO, usuario.getNome());
+                    values.put(USERNAME, usuario.getUser());
+                    values.put(EMAIL, usuario.getEmail());
+                    values.put(SENHA, usuario.getSenha());
+                    values.put(EH_ADMIN, usuario.getEhAdmin());
 
-            ContentValues values = new ContentValues();
-            values.put(NOME_USUARIO, usuario.getNome());
-            values.put(USERNAME, usuario.getUser());
-            values.put(EMAIL, usuario.getEmail());
-            values.put(SENHA, usuario.getSenha());
-            values.put(EH_ADMIN, usuario.getEhAdmin());
+                    // insert
+                    long resposta = db.insert(TABLE_USUARIO, null, values);
+                    db.close();
+                    if(resposta == -1){
+                        Log.d(LOG, "SALVOU USUARIO NO BANCO. TUDO OK!");
+                        return true;
+                    }
+                    else{
+                        Log.d(LOG, "PROBLEMA NO PERSIST DO USUARIO NO BANCO.");
+                        return false;
+                    }
 
-            // insert
-            long resposta = db.insert(TABLE_USUARIO, null, values);
-            db.close();
-            if(resposta != -1){
-                Log.d(LOG, "USUARIO SALVO NO BANCO");
-                Log.d(LOG, "USUARIO SALVO NO BANCO");
-                Log.d(LOG, "USUARIO SALVO NO BANCO");
-                Log.d(LOG, "USUARIO SALVO NO BANCO");
-                return true;
+                }
+                else{
+                    Log.d(LOG, "USUARIO JÁ CADASTRADO. retorna true!!");
+                    return true;
+                }
+
+
             }
-            else
+            catch(SQLException e){
+                e.printStackTrace();
                 return false;
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-            return false;
-        }
+            }
     }
 
     //buscar usuário pelo ID
@@ -346,8 +354,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Usuario usuario = new Usuario();
         try{
-
-            int count = 0;
             String selectQuery = "SELECT  * FROM " + TABLE_USUARIO + " WHERE " + ID + " = " + idUsuario;
 
             Log.d(LOG, selectQuery);
@@ -374,58 +380,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public boolean findUsuarioByEmail(String email){
+    public Usuario findUsuarioByEmail(String email){
         SQLiteDatabase db = this.getReadableDatabase();
-
-        try{
-            String query = "SELECT email FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = " + email;
-            Cursor c = db.rawQuery(query, null);
-
-            if (c.getCount() != 0) {
-                Log.d(LOG, c.getString(c.getColumnIndex(NOME_USUARIO)));
-                db.close();
-                return true;
-            }
-        }
-        catch (SQLiteException e){
-            e.printStackTrace();
-            return false;
-        }
-
-        db.close();
-        return false;
-    }
-
-    public boolean validaUsuarioLogin(String email, String senha){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Usuario usuario = new Usuario();
+        Usuario usuario = null;
         try{
             String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = '" + email +"'";
-
+            Log.d(LOG, query);
             Cursor c = db.rawQuery(query, null);
-            Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
-            return true;
-         /*   if (c.getCount() != 0) {
+            if (c.getCount() != 0) {
                 c.moveToFirst();
-
-                usuario.setEmail((c.getString(c.getColumnIndex(EMAIL))));
-                usuario.setSenha((c.getString(c.getColumnIndex(SENHA))));
-
-                if(usuario.getEmail() == email && usuario.getSenha() == senha){
-                    Log.d(LOG, "EXISTE USUARIO COM EMAIL E SENHA DIGITADO, VAI RETORNAR TRUE");
-                    db.close();
-                    return true;
-                }
+                Log.d(LOG, "Entrou no if. Quantidade de usuarios com o email no login: "+c.getCount());
+                int id = c.getInt(c.getColumnIndex(ID));
+                usuario = findUsuarioByID(id);
+                db.close();
+                return usuario;
             }
-            */
+            else{
+                Log.d(LOG, "Entrou no else. lista de usuários com esse email é vazia. retorona usuario nulo.");
+                db.close();
+                return usuario;
+            }
         }
         catch (SQLiteException e){
-            Log.d(LOG, "deu merda na validação dos dados do usuario");
             e.printStackTrace();
             db.close();
-            return false;
+            return usuario;
+        }
+    }
+
+    public boolean verificaUsuarioCadastrado(String email){
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean resposta = true;
+        try{
+            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = '" + email +"'";
+            Log.d(LOG, query);
+            Cursor c = db.rawQuery(query, null);
+            if (c.getCount() != 0) {
+                Log.d(LOG, "Entrou no if. Existe usuário cadastrado com esse email. Retornou true");
+                return resposta;
+            }
+            else{
+                Log.d(LOG, "Entrou no else.  Não tem usuario com o email cadastrado. retorna false");
+                db.close();
+                resposta = false;
+                return resposta;
+            }
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+            db.close();
         }
 
+        return resposta;
     }
 
     //************************************************** CATEGORIA DATABASE FUNCTIONS *************************************//
@@ -440,15 +446,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // insert
             long resposta = db.insert(TABLE_CATEGORIA, null, values);
-            db.close();
             if(resposta != -1){
                 Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
-                Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
-                Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
+                db.close();
                 return true;
             }
-            else
+            else{
+                db.close();
                 return false;
+            }
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -495,12 +501,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor c1 = db.rawQuery(queryTeste, null);
         c1.moveToFirst();
-        while(c1.moveToNext()){
+        do {
             int id = c1.getInt(c1.getColumnIndex(ID));
-            Log.d(LOG, "id das categorias cadastradas: "+id);
-        }
-
-        Log.e(LOG, selectQuery);
+            Log.d(LOG, "id das categorias cadastradas: " + id);
+        } while(c1.moveToNext());
 
         Cursor c = db.rawQuery(selectQuery, null);
 

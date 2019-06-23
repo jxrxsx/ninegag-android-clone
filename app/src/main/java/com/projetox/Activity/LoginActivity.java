@@ -41,14 +41,51 @@ public class LoginActivity extends AppCompatActivity {
         senhaLogin = findViewById(R.id.tvSenhaLogin);
         btnLogin = findViewById(R.id.btnEfetuaLogin);
 
-       // fazInsercoesIniciais();
+        fazInsercoesIniciais();
 
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                login();
+                Log.d(TAG, "Login");
+
+                btnLogin.setEnabled(false);
+                if (!validaForm()) {
+                    Toast.makeText(getBaseContext(), "Preencha os campos corretamente e tente novamente!", Toast.LENGTH_LONG).show();
+                    btnLogin.setEnabled(true);
+                }
+                else {
+                    // lógica do login
+                    String email = emailLogin.getText().toString();
+                    String password = senhaLogin.getText().toString();
+                    DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
+                    try{
+                        //chama função que verifica se o usuario com email e senha digitados está cadastrado
+                        Usuario usuarioLogado = dbHelper.findUsuarioByEmail(email);
+
+                        if(usuarioLogado == null || !usuarioLogado.getEmail().equals(email) || !usuarioLogado.getSenha().equals(password)){
+                            emailLogin.setError("Credenciais não cadastradas");
+                            btnLogin.setEnabled(true);
+                        }
+                        else {
+                            //se estiver, a função retorna true
+                            Log.d(TAG, "Email do usuario login: " + usuarioLogado.getEmail());
+                            Log.d(TAG, "Senha do usuario login: " + usuarioLogado.getSenha());
+                            if (usuarioLogado.getEmail().equals(email) && usuarioLogado.getSenha().equals(password)) {
+                                Log.d(TAG, "usuario cadastrado!!! entrou no if da logica de login");
+                                btnLogin.setEnabled(true);
+                                //chama tela inicial do app
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            }
+                        }
+                    }
+                    catch(SQLiteException e){
+                        Log.d(TAG, "DEU MERDA NA VERIFICAÇÃO DOS DADOS DO LOGIN");
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -61,29 +98,6 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
-    }
-
-    public void login() {
-        Log.d(TAG, "Login");
-        
-        btnLogin.setEnabled(false);
-        if (!validaForm()) {
-                onLoginFailed();
-        }
-        else {
-/*            //faz um delay pra efeito dramático
-            final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.Theme_AppCompat_DayNight_DarkActionBar);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setMessage("Autenticando...");
-            progressDialog.show();
-*/
-            // lógica do login
-            if (verificaDadosLogin()) {
-                Log.d(TAG, "entrou if verificaDadosLogin");
-               // progressDialog.dismiss();
-                onLoginSuccess();
-            }
-        }
     }
 
 
@@ -103,17 +117,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onBackPressed() {
         // IMPORTANTE!! desabilita voltar pra MainActivity sem fazer o login
         moveTaskToBack(true);
-    }
-
-    public void onLoginSuccess() {
-        btnLogin.setEnabled(true);
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-    }
-
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Falha no Login", Toast.LENGTH_LONG).show();
-
-        btnLogin.setEnabled(true);
     }
 
     public boolean validaForm() {
@@ -141,21 +144,21 @@ public class LoginActivity extends AppCompatActivity {
 
     public void fazInsercoesIniciais(){
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        Usuario usuarioAdmin = new Usuario("jonatan", "jon", "jon@gmail.com", "12345", 1);
-        Usuario usuario = new Usuario("amanda", "mayu", "mayu@gmail.com", "1234", 0);
+        Usuario usuarioAdmin = new Usuario(1,"jonatan", "jon", "jon@gmail.com", "12345", 1);
+        Usuario usuario = new Usuario(2,"amanda", "mayu", "mayu@gmail.com", "1234", 0);
         ArrayList<Categoria> categorias = new ArrayList<>();
 
-        Categoria c1 = new Categoria("dogo");
-        Categoria c2 = new Categoria("narutinho");
-        Categoria c3 = new Categoria("got");
-        Categoria c4 = new Categoria("nsfw");
-        Categoria c5 = new Categoria("food");
-        Categoria c6 = new Categoria("pokémon");
-        Categoria c7 = new Categoria("wtf");
-        Categoria c8 = new Categoria("star wars");
-        Categoria c9 = new Categoria("IT nerd");
-        Categoria c10 = new Categoria("black humor");
-        Categoria c11 = new Categoria("stuff");
+        Categoria c1 = new Categoria(1,"dogo");
+        Categoria c2 = new Categoria(2,"narutinho");
+        Categoria c3 = new Categoria(3,"got");
+        Categoria c4 = new Categoria(4,"nsfw");
+        Categoria c5 = new Categoria(5,"food");
+        Categoria c6 = new Categoria(6,"pokémon");
+        Categoria c7 = new Categoria(7,"wtf");
+        Categoria c8 = new Categoria(8,"star wars");
+        Categoria c9 = new Categoria(9,"IT nerd");
+        Categoria c10 = new Categoria(10,"black humor");
+        Categoria c11 = new Categoria(11,"stuff");
 
         categorias.add(c1);
         categorias.add(c2);
@@ -176,25 +179,4 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
     }
 
-    public boolean verificaDadosLogin(){
-        String email = emailLogin.getText().toString();
-        String password = senhaLogin.getText().toString();
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-
-        try{
-            //chama função que verifica se o usuario com email e senha digitados está cadastrado
-            boolean resposta = dbHelper.validaUsuarioLogin(email, password);
-            //se estiver, a função retorna true
-            if(resposta) {
-                Log.d(TAG, "validaUsuarioLogin retornou TRUE");
-                return true;
-            }
-        }
-        catch(SQLiteException e){
-            Log.d(TAG, "DEU MERDA NA VERIFICAÇÃO DOS DADOS DO LOGIN");
-            e.printStackTrace();
-            return false;
-        }
-        return false;
-    }
 }
