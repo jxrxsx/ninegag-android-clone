@@ -71,6 +71,7 @@ public class PostUploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Usuario userLogado = dbHelper.findUsuarioByID(1);
+                Log.d(TAG, "posicao da categoria selecionada: "+categoria.getSelectedItemPosition());
                 Categoria categoriaSelec = dbHelper.findCategoriaByID(categoria.getSelectedItemPosition());
                 Post novoPost = new Post();
                 novoPost.setTitulo(tvTitulo.getText().toString());
@@ -79,8 +80,8 @@ public class PostUploadActivity extends AppCompatActivity {
                 novoPost.setMediaVotos(new Double(0));
                 novoPost.setNomeImagem("post"+dbHelper.findLastPostID());
                 Log.d(TAG, "LastPostID: "+dbHelper.findLastPostID());
-                Log.d(TAG, "LastPostID: "+dbHelper.findLastPostID());
                 Log.d(TAG, "nome da imagem do post: "+novoPost.getNomeImagem());
+                Log.d(TAG, "categoria do post salvo: "+categoriaSelec.getNome());
 
 
                 //salva a imagem na memória interna e o caminho dela no banco
