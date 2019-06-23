@@ -2,12 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="#FAFAFA"
         android:orientation="vertical"
         android:paddingLeft="24dp"
@@ -70,6 +70,15 @@
             android:gravity="center"
             android:text="Cadastre-se"
             android:textSize="16dip" />
+
+        <TextView
+            android:id="@+id/tvGoHorse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoText="false"
+            android:gravity="center"
+            android:text="Coded by the Go Horse programming rules"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </ScrollView>

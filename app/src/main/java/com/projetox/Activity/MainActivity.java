@@ -1,20 +1,9 @@
 package com.projetox.Activity;
 
-import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,23 +18,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.webkit.PermissionRequest;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.projetox.Adapter.AdapterPost;
-import com.projetox.Model.Categoria;
 import com.projetox.Model.Post;
-import com.projetox.Model.Usuario;
 import com.projetox.R;
 import com.projetox.SQLiteHelper.DatabaseHelper;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -79,10 +61,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*********************************  FIM DO LAYOUT PRONTO *********************************************/
 
         /********************************* INICIO CÓDIGO ****************************************************/
-        Toast.makeText(getApplicationContext(), "AAAWWWWW YEA, WELCOME BACK!", Toast.LENGTH_SHORT).show();
         DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
-
-        //fazInsercoesIniciais();
+        String idUsuarioLogado = getIntent().getStringExtra("idUsuarioLogado");
+        String nomeUsuarioLogado = getIntent().getStringExtra("nomeUsuarioLogado");
+        String ehAdminUsuarioLogado = getIntent().getStringExtra("ehAdminUsuarioLogado");
+        Toast.makeText(getApplicationContext(), "BEM-VINDO DE VOLTA, "+nomeUsuarioLogado+"!", Toast.LENGTH_LONG).show();
 
 
         recyclerDados = findViewById(R.id.rvPosts);
@@ -203,53 +186,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_tools) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.nav_dogo) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria dogo", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_narutinho) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria narutinho", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_got) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria got", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_nsfw) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria nsfw", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_food) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria food", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_pokemon) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria pokemon", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_wtf) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria wtf", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_star_wars) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria star wars", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_it_nerd) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria it nerd", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.nav_black_humor) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria black humor", Toast.LENGTH_LONG).show();
+        }else if (id == R.id.nav_stuff) {
+            Toast.makeText(getApplicationContext(), "clicou na categoria stuff", Toast.LENGTH_LONG).show();
         }
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    public void fazInsercoesIniciais(){
-        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        Usuario usuario = new Usuario("jonatan", "jon", "jon@gmail.com", "123", 1);
-        ArrayList<Categoria> categorias = new ArrayList<>();
-
-        Categoria c1 = new Categoria("dogo");
-        Categoria c2 = new Categoria("narutinho");
-        Categoria c3 = new Categoria("got");
-        Categoria c4 = new Categoria("nsfw");
-        Categoria c5 = new Categoria("food");
-        Categoria c6 = new Categoria("pokémin");
-        Categoria c7 = new Categoria("wtf");
-        Categoria c8 = new Categoria("star wars");
-
-        categorias.add(c1);
-        categorias.add(c2);
-        categorias.add(c3);
-        categorias.add(c4);
-        categorias.add(c5);
-        categorias.add(c6);
-        categorias.add(c7);
-        categorias.add(c8);
-
-        dbHelper.persistUsuario(usuario);
-        dbHelper.persistCategorias(categorias);
-
-        Log.d(TAG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
-    }
-
 
 }

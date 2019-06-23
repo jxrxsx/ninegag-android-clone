@@ -77,7 +77,11 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d(TAG, "usuario cadastrado!!! entrou no if da logica de login");
                                 btnLogin.setEnabled(true);
                                 //chama tela inicial do app
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("idUsuarioLogado", usuarioLogado.getId()+"");
+                                intent.putExtra("nomeUsuarioLogado", usuarioLogado.getNome());
+                                intent.putExtra("ehAdminUsuarioLogado", usuarioLogado.getEhAdmin()+"");
+                                startActivity(intent);
                             }
                         }
                     }
