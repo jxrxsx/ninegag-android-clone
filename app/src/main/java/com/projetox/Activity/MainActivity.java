@@ -32,7 +32,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerDados;
-    private ArrayList<Post> posts = new ArrayList<Post>();
+    private ArrayList<Post> listaPostsMostrando = new ArrayList<Post>();
+    private ArrayList<Post> listaBckpPosts = new ArrayList<Post>();
+    private AdapterPost adapter;
     private FloatingActionButton postUpload;
     private ImageView imageView;
     private static final String TAG = "MainActivity";
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String idUsuarioLogado = getIntent().getStringExtra("idUsuarioLogado");
         String nomeUsuarioLogado = getIntent().getStringExtra("nomeUsuarioLogado");
         String ehAdminUsuarioLogado = getIntent().getStringExtra("ehAdminUsuarioLogado");
-        Toast.makeText(getApplicationContext(), "BEM-VINDO DE VOLTA, "+nomeUsuarioLogado+"!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Bem-vindo(a) de volta, "+nomeUsuarioLogado+"!", Toast.LENGTH_LONG).show();
 
 
         recyclerDados = findViewById(R.id.rvPosts);
@@ -81,11 +83,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         // Chama função que busca todos os posts cadastrados para mostrar na recycler view
-        posts = dbHelper.getAllPosts();
-        Log.d(TAG, "lista de posta: "+posts.toArray().toString());
-
+        listaBckpPosts = dbHelper.getAllPosts();
+        listaPostsMostrando = listaBckpPosts;
         // Configurar adapter
-        AdapterPost adapter = new AdapterPost(posts);
+        adapter = new AdapterPost(listaPostsMostrando);
         Log.d(TAG, "passou da dbHelper.getAllPosts()");
 
         // Configurar RecyclerView
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerDados.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
         recyclerDados.setAdapter(adapter);
-
+        adapter.notifyDataSetChanged();
 
         /* Adicionando eventos de clique a partir de classe já estabelecida
         recyclerDados.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), recyclerDados, new RecyclerItemClickListener.OnItemClickListener() {
@@ -124,27 +125,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume(){
         super.onResume();
-        DatabaseHelper dbHelper = new DatabaseHelper(this.getApplicationContext());
-
-        posts = dbHelper.getAllPosts();
-        Log.d(TAG, "lista de posta: "+posts.toArray().toString());
 
         // Configurar adapter
-        AdapterPost adapter = new AdapterPost(posts);
-        Log.d(TAG, "passou da dbHelper.getAllPosts()");
-
-        // Configurar RecyclerView
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerDados.setLayoutManager(layoutManager);
-        // fixa o tamanho para otimizar
-        recyclerDados.setHasFixedSize(true);
-
-        // adiciona linha separadora dos elementos
-        recyclerDados.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
-
-        recyclerDados.setAdapter(adapter);
-
-
+   /*     listaPostsMostrando = listaBckpPosts;
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, "Voltou a mostra todos os posts originais");
+        */
     }
 
 
@@ -185,9 +171,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+
 
         if (id == R.id.nav_dogo) {
             Toast.makeText(getApplicationContext(), "clicou na categoria dogo", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(1);
+
         } else if (id == R.id.nav_narutinho) {
             Toast.makeText(getApplicationContext(), "clicou na categoria narutinho", Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_got) {
@@ -210,10 +201,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(getApplicationContext(), "clicou na categoria stuff", Toast.LENGTH_LONG).show();
         }
 
+        adapter.notifyDataSetChanged();
+        Log.d(TAG, "passou da filtragem de posts");
+
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 }

@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         senhaLogin = findViewById(R.id.tvSenhaLogin);
         btnLogin = findViewById(R.id.btnEfetuaLogin);
 
-        fazInsercoesIniciais();
+        //fazInsercoesIniciais();
 
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void fazInsercoesIniciais(){
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
-        Usuario usuarioAdmin = new Usuario(1,"jonatan", "jon", "jon@gmail.com", "12345", 1);
+        Usuario usuarioAdmin = new Usuario(1,"jonatan", "jon", "jonatan.rodrigues@unesp.br", "12345", 1);
         Usuario usuario = new Usuario(2,"amanda", "mayu", "mayu@gmail.com", "1234", 0);
         ArrayList<Categoria> categorias = new ArrayList<>();
 

@@ -37,6 +37,7 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
     public AdapterPost(ArrayList<Post> listaPosts) {
         this.listaPosts = listaPosts;
 
+
     }
 
     @NonNull
@@ -58,7 +59,7 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         // i vai de 0 a lista.size
 
         myViewHolder.imagem.setImageDrawable((loadImageFromStorage(listaPosts.get(i).getCaminhoImagem(), myViewHolder.imagem, listaPosts.get(i).getNomeImagem())));
-        myViewHolder.user.setText(listaPosts.get(i).getUsuario().getNome());
+        myViewHolder.user.setText(listaPosts.get(i).getUsuario().getUser());
         myViewHolder.titulo.setText(listaPosts.get(i).getTitulo());
         myViewHolder.categoria.setText(listaPosts.get(i).getCategoria().getNome());
         myViewHolder.mediaVotos.setText(String.valueOf(listaPosts.get(i).getMediaVotos()));

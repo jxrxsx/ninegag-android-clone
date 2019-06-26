@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -35,7 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 27;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -241,7 +242,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             idPost = c.getInt(c.getColumnIndex(ID));
         }
         else
-            idPost = 0;
+            idPost = 1;
 
         db.close();
 
@@ -306,6 +307,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return listaPosts;
     }
+
+    //carrega lista de posts de uma categoria especifica
+    public ArrayList<Post> getPostsByCategoriaID(int idCategoria) {
+
+        ArrayList<Post> listaPostsCategoria = new ArrayList<Post>();
+        listaPostsCategoria.clear();
+
+        try{
+            for(Post p: getAllPosts()){
+                if(p.getCategoria().getId() != idCategoria){
+                    listaPostsCategoria.add(p);
+                }
+            }
+            Log.d(LOG, "vai retornar lista de posts da categoria");
+            return listaPostsCategoria;
+        }
+        catch(SQLiteException e){
+            e.printStackTrace();
+            return listaPostsCategoria;
+        }
+    }
+
+    //get posts by categoria
+    //carrega lista de posts pra mostrar na página inicial
+    public ArrayList<Post> postsPorCategoria(int idCategoria) {
+
+        ArrayList<Post> listaPosts = new ArrayList<Post>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try{
+
+            String selectQuery = "SELECT * FROM " + TABLE_POST + " WHERE " + ID_CATEGORIA_POST + " = " + idCategoria;
+
+            Log.d(LOG, selectQuery);
+
+            Cursor c = db.rawQuery(selectQuery, null);
+            Log.d(LOG, "numero de linhas da consulta pelos posts por categoria: "+c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+                Post post;
+                while(c.moveToNext()){
+                    int idPost = c.getInt(c.getColumnIndex(ID));
+                    post = findPostByID(idPost);
+                    Log.d(LOG, "titulo do post na busca pelas categorias: "+post.getTitulo());
+                    // add na lista de posts
+                    listaPosts.add(post);
+                }
+                Log.d(LOG, "criou lista de posts por categoria");
+            }
+            else{
+                Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
+            }
+            db.close();
+        }
+        catch(SQLiteException e){
+            e.printStackTrace();
+            db.close();
+        }
+        return listaPosts;
+    }
+
 
     //************************************************** USUARIO DATABASE FUNCTIONS *************************************//
 
@@ -476,53 +539,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 // insert
                 resposta = db.insert(TABLE_CATEGORIA, null, values);
+
+                if(resposta != -1)
+                    Log.d(LOG, "Salvou a categoria "+c.getNome()+" com id: "+c.getId());
+                else
+                    return false;
             }
 
             db.close();
-            if(resposta != -1){
-                Log.d(LOG, "SALVOU LISTA DE CATEGORIA NO BANCO");
-                return true;
-            }
-            else
-                return false;
+
         }
         catch(SQLException e){
             e.printStackTrace();
             return false;
         }
+        Log.d(LOG, "SALVOU TODAS AS CATEGORIAS NO BANCO");
+        return true;
     }
 
+    //buscar usuário pelo ID
     public Categoria findCategoriaByID(int idCategoria) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int count = 0;
-        String selectQuery = "SELECT * FROM " + TABLE_CATEGORIA + " WHERE " + ID + " = " + idCategoria;
-
-        String queryTeste = "SELECT * FROM " + TABLE_CATEGORIA;
-
-        Cursor c1 = db.rawQuery(queryTeste, null);
-        c1.moveToFirst();
-        do {
-            int id = c1.getInt(c1.getColumnIndex(ID));
-            Log.d(LOG, "id das categorias cadastradas: " + id);
-        } while(c1.moveToNext());
-
-        Cursor c = db.rawQuery(selectQuery, null);
-
         Categoria categoria = new Categoria();
-        if (c != null) {
-            c.moveToFirst();
-            while (c.moveToNext()) {
-                categoria = new Categoria();
+        try{
+            String selectQuery = "SELECT * FROM " + TABLE_CATEGORIA + " WHERE " + ID + " = " + idCategoria;
+
+            Log.d(LOG, selectQuery);
+
+            Cursor c = db.rawQuery(selectQuery, null);
+            Log.d(LOG, "resultado da consulta de categorias: "+c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+
                 categoria.setId((c.getInt(c.getColumnIndex(ID))));
                 categoria.setNome((c.getString(c.getColumnIndex(NOME_CATEGORIA))));
             }
-        }
-        else{
-            return null;
-        }
 
-        db.close();
-        return categoria;
+            db.close();
+            return categoria;
+        }
+        catch (SQLiteException e){
+            e.printStackTrace();
+            db.close();
+            return categoria;
+        }
     }
+
 
 }

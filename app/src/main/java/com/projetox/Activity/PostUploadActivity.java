@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -71,8 +72,8 @@ public class PostUploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Usuario userLogado = dbHelper.findUsuarioByID(1);
-                Log.d(TAG, "posicao da categoria selecionada: "+categoria.getSelectedItemPosition());
-                Categoria categoriaSelec = dbHelper.findCategoriaByID(categoria.getSelectedItemPosition());
+                int idCatSelecionada = categoria.getSelectedItemPosition() + 1;
+                Categoria categoriaSelec = dbHelper.findCategoriaByID(idCatSelecionada);
                 Post novoPost = new Post();
                 novoPost.setTitulo(tvTitulo.getText().toString());
                 novoPost.setUsuario(userLogado);
@@ -81,6 +82,7 @@ public class PostUploadActivity extends AppCompatActivity {
                 novoPost.setNomeImagem("post"+dbHelper.findLastPostID());
                 Log.d(TAG, "LastPostID: "+dbHelper.findLastPostID());
                 Log.d(TAG, "nome da imagem do post: "+novoPost.getNomeImagem());
+                Log.d(TAG, "id da categoria selecionada: "+ idCatSelecionada);
                 Log.d(TAG, "categoria do post salvo: "+categoriaSelec.getNome());
 
 
@@ -97,6 +99,19 @@ public class PostUploadActivity extends AppCompatActivity {
                 if (respPost == true){
                     Toast.makeText(getApplicationContext(), "SALVOOOOUUU POOOOSTTT", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        categoria.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "categoria: "+categoria.getSelectedItem().toString(), Toast.LENGTH_SHORT);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
