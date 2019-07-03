@@ -99,6 +99,7 @@ public class PostUploadActivity extends AppCompatActivity {
                 if (respPost == true){
                     Toast.makeText(getApplicationContext(), "SALVOOOOUUU POOOOSTTT", Toast.LENGTH_LONG).show();
                 }
+                finish();
             }
         });
 

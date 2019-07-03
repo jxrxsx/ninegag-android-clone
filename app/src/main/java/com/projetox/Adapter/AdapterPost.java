@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import com.projetox.R;
 import com.projetox.Model.Post;
 import com.projetox.Model.Post;
 import com.projetox.R;
+import com.projetox.RecyclerItemClickListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,13 +67,16 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         myViewHolder.mediaVotos.setText(String.valueOf(listaPosts.get(i).getMediaVotos()));
         myViewHolder.rbEstrelas.setRating(listaPosts.get(i).getMediaVotos().floatValue());
 
-
-        myViewHolder.rbEstrelas.setOnClickListener(new View.OnClickListener() {
+        final int indiceEstrela = i;
+        myViewHolder.rbEstrelas.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(v.getContext().getApplicationContext(), "CLICOU NAS ESTRELAS", Toast.LENGTH_LONG).show();
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.d(TAG, "indice estrela: ");
+                return true;
             }
         });
+
+
 
     }
 
@@ -101,6 +106,8 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
             mediaVotos = itemView.findViewById(R.id.tvMediaVotos);
 
         }
+
+
     }
 
     private Drawable loadImageFromStorage(String path, ImageView imagemSalva, String nomeImagem)

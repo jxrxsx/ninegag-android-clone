@@ -69,15 +69,18 @@
             android:paddingLeft="20dp"
             android:text="média votos"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="invisible" />
 
         <RatingBar
             android:id="@+id/rbEstrelas"
             style="@style/Widget.AppCompat.RatingBar.Indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:isIndicator="true"
             android:numStars="5"
+            android:rating="3"
             android:stepSize="1" />
 
     </LinearLayout>

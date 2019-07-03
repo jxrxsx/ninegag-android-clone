@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
         dbHelper.persistUsuario(usuario);
         dbHelper.persistCategorias(categorias);
 
-        Log.d(TAG, "passou das inserçõoooooooooooooooooooooooooooooooooesssssssssssssssss");
+        Log.d(TAG, "passou das inserçõooeess");
     }
 
 }

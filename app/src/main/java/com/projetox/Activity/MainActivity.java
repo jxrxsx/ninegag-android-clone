@@ -125,12 +125,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume(){
         super.onResume();
-
-        // Configurar adapter
-   /*     listaPostsMostrando = listaBckpPosts;
+        DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        listaPostsMostrando = dbHelper.getAllPosts();
+        adapter = new AdapterPost(listaPostsMostrando);
         adapter.notifyDataSetChanged();
+        recyclerDados.setAdapter(adapter);
         Log.d(TAG, "Voltou a mostra todos os posts originais");
-        */
+
     }
 
 
@@ -173,35 +174,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
 
-
         if (id == R.id.nav_dogo) {
             Toast.makeText(getApplicationContext(), "clicou na categoria dogo", Toast.LENGTH_LONG).show();
             listaPostsMostrando.clear();
             listaPostsMostrando = dbHelper.postsPorCategoria(1);
-
         } else if (id == R.id.nav_narutinho) {
             Toast.makeText(getApplicationContext(), "clicou na categoria narutinho", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(2);
         } else if (id == R.id.nav_got) {
             Toast.makeText(getApplicationContext(), "clicou na categoria got", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(3);
         } else if (id == R.id.nav_nsfw) {
             Toast.makeText(getApplicationContext(), "clicou na categoria nsfw", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(4);
         } else if (id == R.id.nav_food) {
             Toast.makeText(getApplicationContext(), "clicou na categoria food", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(5);
         } else if (id == R.id.nav_pokemon) {
             Toast.makeText(getApplicationContext(), "clicou na categoria pokemon", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(6);
         } else if (id == R.id.nav_wtf) {
             Toast.makeText(getApplicationContext(), "clicou na categoria wtf", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(7);
         } else if (id == R.id.nav_star_wars) {
             Toast.makeText(getApplicationContext(), "clicou na categoria star wars", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(8);
         } else if (id == R.id.nav_it_nerd) {
             Toast.makeText(getApplicationContext(), "clicou na categoria it nerd", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(9);
         } else if (id == R.id.nav_black_humor) {
             Toast.makeText(getApplicationContext(), "clicou na categoria black humor", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(10);
         }else if (id == R.id.nav_stuff) {
             Toast.makeText(getApplicationContext(), "clicou na categoria stuff", Toast.LENGTH_LONG).show();
+            listaPostsMostrando.clear();
+            listaPostsMostrando = dbHelper.postsPorCategoria(11);
         }
 
+        adapter = new AdapterPost(listaPostsMostrando);
         adapter.notifyDataSetChanged();
+        recyclerDados.setAdapter(adapter);
         Log.d(TAG, "passou da filtragem de posts");
 
 

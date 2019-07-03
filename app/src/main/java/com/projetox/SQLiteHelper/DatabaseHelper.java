@@ -36,7 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 29;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -47,9 +47,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_POST = "post";
     private static final String TABLE_INTERACAO_USUARIO_POST = "interacao";
 
+
     // atributo comum a todas as tabelas
     private static final String ID = "id";
-
     //colunas da tabela USUARIO
     private static final String NOME_USUARIO = "nome_usuario";
     private static final String USERNAME = "username";
