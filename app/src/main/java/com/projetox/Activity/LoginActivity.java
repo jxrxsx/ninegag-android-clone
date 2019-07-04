@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                                 //chama tela inicial do app
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra("idUsuarioLogado", usuarioLogado.getId()+"");
-                                intent.putExtra("nomeUsuarioLogado", usuarioLogado.getNome());
+                                intent.putExtra("nomeUsuarioLogado", usuarioLogado.getNome()+"");
                                 intent.putExtra("ehAdminUsuarioLogado", usuarioLogado.getEhAdmin()+"");
                                 startActivity(intent);
                             }

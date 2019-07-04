@@ -41,7 +41,7 @@ import java.io.IOException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class PostUploadActivity extends AppCompatActivity {
+public abstract class PostUploadActivity extends AppCompatActivity {
 
     private TextInputLayout tilTitulo;
     private EditText tvTitulo;
@@ -155,7 +155,7 @@ public class PostUploadActivity extends AppCompatActivity {
 
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage, String nomeImagem) throws IOException {
+    public String saveToInternalStorage(Bitmap bitmapImage, String nomeImagem) throws IOException {
         Log.d(TAG, "nome da imagem que chegou na SaveToInternalStorage: "+nomeImagem);
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir

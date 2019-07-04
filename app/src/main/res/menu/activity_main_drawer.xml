@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_dogo"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_dogo" />
         <item
             android:id="@+id/nav_narutinho"
@@ -14,45 +14,51 @@
             android:title="@string/menu_narutinho" />
         <item
             android:id="@+id/nav_got"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_got" />
         <item
             android:id="@+id/nav_nsfw"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_nsfw" />
         <item
             android:id="@+id/nav_food"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_food" />
         <item
             android:id="@+id/nav_pokemon"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_pokemon" />
         <item
             android:id="@+id/nav_wtf"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_wtf" />
         <item
             android:id="@+id/nav_star_wars"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_star_wars" />
         <item
             android:id="@+id/nav_it_nerd"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_it_nerd" />
         <item
             android:id="@+id/nav_black_humor"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_black_humor" />
         <item
             android:id="@+id/nav_stuff"
+            android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_stuff" />
+        <item
+            android:enabled="false"
+            android:title="__________________________" />
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Perfil" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_logout" />
     </group>
-
-    <item android:title="Perfil">
-        <menu>
-            <item
-                android:id="@+id/nav_excluir_post"
-                android:title="Excluir post" />
-            <item
-                android:id="@+id/na"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_logout" />
-        </menu>
-    </item>
 
 </menu>

@@ -57,7 +57,7 @@
         android:id="@+id/LLHorizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:paddingBottom="10dp">
 
@@ -82,6 +82,12 @@
             android:numStars="5"
             android:rating="3"
             android:stepSize="1" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="151dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

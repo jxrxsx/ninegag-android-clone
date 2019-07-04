@@ -7,27 +7,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Base64;
 import android.util.Log;
-import android.widget.Adapter;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.projetox.Adapter.AdapterPost;
 import com.projetox.Model.Categoria;
 import com.projetox.Model.Post;
+import com.projetox.Model.Reacao;
 import com.projetox.Model.Usuario;
-import com.projetox.R;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -36,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOG = "DatabaseHelper";
 
     // versão do banco
-    private static final int DATABASE_VERSION = 29;
+    private static final int DATABASE_VERSION = 33;
 
     // nome do banco
     private static final String DATABASE_NAME = "ninegag";
@@ -169,6 +155,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(CAMINHO_IMAGEM, post.getCaminhoImagem());
         values.put(NOME_IMAGEM, post.getNomeImagem());
 
+        /*
+        String query = "SELECT * FROM " + TABLE_POST;
+        Cursor c = db.rawQuery(query, null);
+
+        if(c.getCount() == 0)
+            values.put(ID, 1);
+        */
+
         // insert
         long resposta = db.insert(TABLE_POST, null, values);
             db.close();
@@ -189,7 +183,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //buscar post pelo ID
     public Post findPostByID(int idPost) {
         SQLiteDatabase db = this.getReadableDatabase();
-        int count = 0;
         int idUsuario, idCategoria;
         Usuario usuario = new Usuario();
         Categoria categoria = new Categoria();
@@ -292,8 +285,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // add na lista de posts
                 listaPosts.add(post);
                 Log.d(LOG, "Adicionou post na lista");
-
-
             }
         }
         else{
@@ -583,6 +574,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
             return categoria;
         }
+    }
+
+    //************************************************** REACOES DATABASE FUNCTIONS *************************************//
+
+    //carrega lista de posts pra mostrar na página inicial
+    public ArrayList<Reacao> getReacoesByPostID(int idPost) {
+        ArrayList<Reacao> listaReacoes = new ArrayList<Reacao>();
+        int idUsuario;
+        Usuario usuario = new Usuario();
+        Post post = findPostByID(idPost);
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try{
+            //ver de mudar nome da tabelaaaa
+            String selectQuery = "SELECT * FROM " + TABLE_INTERACAO_USUARIO_POST + " WHERE " + ID_POST_INTERACAO + " = " + idPost;
+
+            Log.d(LOG, selectQuery);
+
+            Cursor c = db.rawQuery(selectQuery, null);
+
+            Log.d(LOG,"quantidade de reacoes cadastradas: "+c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+                Reacao reacao;
+                while(c.moveToNext()){
+                    reacao = new Reacao();
+
+                    //procura usuário autor de cada reação para setar no objeto reação
+                    idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_INTERACAO)));
+                    usuario = findUsuarioByID(idUsuario);
+
+                    reacao.setId(c.getInt(c.getColumnIndex(ID)));
+                    reacao.setPost(post);
+                    reacao.setUsuario(usuario);
+                    reacao.setQtdEstrelas(c.getInt(c.getColumnIndex(QTD_ESTRELAS)));
+                    reacao.setComentario(c.getString(c.getColumnIndex(COMENTARIO)));
+
+                    // add na lista de reacoes
+                    listaReacoes.add(reacao);
+                    Log.d(LOG, "Adicionou post na lista");
+
+
+                }
+            }
+            else{
+                Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
+            }
+            db.close();
+        }
+        catch(SQLiteException e){
+            e.printStackTrace();
+            db.close();
+        }
+        //retorna lista de reações que alimentará o adapterReacoes
+        return listaReacoes;
     }
 
 

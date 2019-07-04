@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LLVertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:dividerPadding="@dimen/nav_header_vertical_spacing"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:showDividers="end">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvAutorComentario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textStyle="bold" />
+
+        <RatingBar
+            android:id="@+id/qtdEstrelasCad"
+            android:layout_width="182dp"
+            android:layout_height="43dp"
+            android:layout_weight="1"
+            android:max="5"
+            android:numStars="5"
+            android:stepSize="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvComentario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="TextView" />
+</LinearLayout>

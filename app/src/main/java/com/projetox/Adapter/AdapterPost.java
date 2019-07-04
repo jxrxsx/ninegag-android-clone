@@ -115,8 +115,6 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         try {
             File f = new File(path, nomeImagem);
             Log.d(TAG, "caminho da pasta: "+ path);
-            Log.d(TAG, "caminho da pasta: "+ path);
-            Log.d(TAG, "caminho da pasta: "+ path);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
 
             imagemSalva.setImageBitmap(b);

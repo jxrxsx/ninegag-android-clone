@@ -1,19 +1,19 @@
 package com.projetox.Model;
 
-public class InteracaoUsuarioPost {
+public class Reacao {
     private Integer id;
-    private Integer idPost;
-    private Integer idUsuario;
+    private Post post;
+    private Usuario usuario;
     private Integer qtdEstrelas;
     private String comentario;
 
-    public InteracaoUsuarioPost(){
+    public Reacao(){
 
     }
 
-    public InteracaoUsuarioPost(Integer idPost, Integer idUsuario, Integer qtdEstrelas, String comentario) {
-        this.idPost = idPost;
-        this.idUsuario = idUsuario;
+    public Reacao(Post post, Usuario usuario, Integer qtdEstrelas, String comentario) {
+        this.post = post;
+        this.usuario = usuario;
         this.qtdEstrelas = qtdEstrelas;
         this.comentario = comentario;
     }
@@ -22,20 +22,24 @@ public class InteracaoUsuarioPost {
         return this.id;
     }
 
-    public Integer getIdPost() {
-        return idPost;
+    public void setId(Integer id){
+        this.id = id;
     }
 
-    public void setIdPost(Integer idPost) {
-        this.idPost = idPost;
+    public Post getPost() {
+        return this.post;
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Integer getQtdEstrelas() {
