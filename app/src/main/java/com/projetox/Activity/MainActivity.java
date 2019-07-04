@@ -1,10 +1,13 @@
 package com.projetox.Activity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -117,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerDados.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+        final Context mcontext = this;
+
+
         //Adicionando eventos de clique a partir de classe já estabelecida
         recyclerDados.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), recyclerDados, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
@@ -132,9 +138,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onLongItemClick(View view, int position) {
                         //SE O USUARIO FOR ADMIN
-                            //ABRIR ALERT DIALOG PARA EXCLUIR POST
+                        //ABRIR ALERT DIALOG PARA EXCLUIR POST
                         //SENÃO
-                            //NÃO FAZ NADA
+                        //NÃO FAZ NADA
+                        Toast.makeText(getApplicationContext(), "CLIQUE LOOOONGO", Toast.LENGTH_LONG).show();
+                        if(flagEhAdmin == true){
+                            final int idPostClicado = position+2;
+                            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mcontext);
+                            alertDialogBuilder.setMessage("Esta ação é irreversível! Tem certeza que deseja excluir este post?");
+                                alertDialogBuilder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        boolean resposta = dbHelper.deletePostByID(idPostClicado);
+                                        if(resposta) {
+                                            adapter.notifyDataSetChanged();
+                                            Toast.makeText(MainActivity.this, "Post excluído com sucesso!", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else
+                                            Toast.makeText(MainActivity.this,"Erro ao excluir post. Tente novamente ou contate um ADM.",Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                            alertDialogBuilder.setNegativeButton("Não",new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            AlertDialog alertDialog = alertDialogBuilder.create();
+                            alertDialog.show();
+
+                        }
+
                     }
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -32,7 +32,7 @@ public class AdapterReacao extends RecyclerView.Adapter<AdapterReacao.MyViewHold
         // Este método cria a View para serem exibidos os elementos
 
         // Converte o layout XML para uma View
-        View listaItens = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.adapter_post, viewGroup, false);
+        View listaItens = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.adapter_post_view, viewGroup, false);
 
         return new MyViewHolder(listaItens);
     }
@@ -67,8 +67,8 @@ public class AdapterReacao extends RecyclerView.Adapter<AdapterReacao.MyViewHold
 
             //linka os elementos do layout aos atributos da classe
             autorComentario = itemView.findViewById(R.id.tvAutorComentario);
-            comentario = itemView.findViewById(R.id.tvComentario);
-            qtdEstrelasCad = itemView.findViewById(R.id.qtdEstrelasCad);
+            comentario = itemView.findViewById(R.id.tvComentarioCadastrado);
+            qtdEstrelasCad = itemView.findViewById(R.id.rbQtdEstrelasCad);
         }
     }
 

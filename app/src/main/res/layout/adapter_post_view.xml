@@ -25,18 +25,22 @@
             android:textStyle="bold" />
 
         <RatingBar
-            android:id="@+id/qtdEstrelasCad"
+            android:id="@+id/rbQtdEstrelasCad"
             android:layout_width="182dp"
             android:layout_height="43dp"
             android:layout_weight="1"
+            android:clickable="false"
+            android:indeterminate="false"
+            android:isIndicator="true"
             android:max="5"
             android:numStars="5"
-            android:stepSize="1" />
+            android:saveEnabled="false"
+            android:stepSize="1.0" />
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tvComentario"
+        android:id="@+id/tvComentarioCadastrado"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"

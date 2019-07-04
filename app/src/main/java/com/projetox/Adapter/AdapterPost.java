@@ -38,8 +38,6 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
 
     public AdapterPost(ArrayList<Post> listaPosts) {
         this.listaPosts = listaPosts;
-
-
     }
 
     @NonNull

@@ -578,6 +578,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //************************************************** REACOES DATABASE FUNCTIONS *************************************//
 
+    public boolean persistReacao(Reacao reacao) {
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(ID_POST_INTERACAO, reacao.getPost().getId());
+            values.put(ID_USUARIO_INTERACAO, reacao.getUsuario().getId());
+            values.put(QTD_ESTRELAS, reacao.getQtdEstrelas());
+            values.put(COMENTARIO, reacao.getComentario());
+
+            // insert
+            long resposta = db.insert(TABLE_INTERACAO_USUARIO_POST, null, values);
+            if(resposta != -1){
+                Log.d(LOG, "SALVOU REACAO NO BANCO");
+                db.close();
+                return true;
+            }
+            else{
+                db.close();
+                return false;
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     //carrega lista de posts pra mostrar na página inicial
     public ArrayList<Reacao> getReacoesByPostID(int idPost) {
         ArrayList<Reacao> listaReacoes = new ArrayList<Reacao>();
@@ -613,13 +641,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     // add na lista de reacoes
                     listaReacoes.add(reacao);
-                    Log.d(LOG, "Adicionou post na lista");
+                    Log.d(LOG, "Adicionou reação na lista");
 
 
                 }
             }
             else{
-                Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
+                Log.d(LOG, "SELECT NAS REACOES RETORNOU 0 LINHAS");
             }
             db.close();
         }
@@ -629,6 +657,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         //retorna lista de reações que alimentará o adapterReacoes
         return listaReacoes;
+    }
+
+    public boolean deletePostByID(int idPost){
+        //ver de mudar nome da tabelaaaa
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            int resposta = db.delete(TABLE_POST,"ID=?",new String[]{String.valueOf(idPost)});
+            //significa que a query afetou alguma tupla
+            if(resposta != 0) {
+                Log.d(LOG, "deu certo a deleção, vai retornar true");
+                return true;
+            }
+            else{
+                Log.d(LOG, "DEU ERRO AO DELETAR POST. vai retornar false");
+                return  false;
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
