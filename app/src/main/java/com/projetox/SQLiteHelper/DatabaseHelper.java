@@ -15,6 +15,7 @@ import com.projetox.Model.Reacao;
 import com.projetox.Model.Usuario;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -94,9 +95,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CAMINHO_IMAGEM + " VARCHAR,"
             + NOME_IMAGEM + " VARCHAR,"
             + "FOREIGN KEY (" + ID_USUARIO_POST
-                + ") REFERENCES " + TABLE_USUARIO + "("+ID+"), "
+            + ") REFERENCES " + TABLE_USUARIO + "(" + ID + "), "
             + "FOREIGN KEY (" + ID_CATEGORIA_POST
-                + ") REFERENCES " + TABLE_CATEGORIA +"("+ID+")"
+            + ") REFERENCES " + TABLE_CATEGORIA + "(" + ID + ")"
             + ")";
 
 
@@ -109,9 +110,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + QTD_ESTRELAS + " INTEGER,"
             + COMENTARIO + " VARCHAR,"
             + "FOREIGN KEY (" + ID_USUARIO_INTERACAO
-                + ") REFERENCES " + TABLE_USUARIO + "("+ID+"), "
+            + ") REFERENCES " + TABLE_USUARIO + "(" + ID + "), "
             + "FOREIGN KEY (" + ID_POST_INTERACAO
-                + ") REFERENCES " + TABLE_POST +"("+ID+")"
+            + ") REFERENCES " + TABLE_POST + "(" + ID + ")"
             + ")";
 
     public DatabaseHelper(Context context) {
@@ -143,17 +144,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //************************************** POST DATABASE FUNCTIONS ************************************************//
 
     public boolean persistPost(Post post) {
-        try{
+        try {
 
-        SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(ID_USUARIO_POST, post.getUsuario().getId());
-        values.put(ID_CATEGORIA_POST, post.getCategoria().getId());
-        values.put(TITULO, post.getTitulo());
-        values.put(MEDIA_VOTOS, post.getMediaVotos());
-        values.put(CAMINHO_IMAGEM, post.getCaminhoImagem());
-        values.put(NOME_IMAGEM, post.getNomeImagem());
+            ContentValues values = new ContentValues();
+            values.put(ID_USUARIO_POST, post.getUsuario().getId());
+            values.put(ID_CATEGORIA_POST, post.getCategoria().getId());
+            values.put(TITULO, post.getTitulo());
+            values.put(MEDIA_VOTOS, post.getMediaVotos());
+            values.put(CAMINHO_IMAGEM, post.getCaminhoImagem());
+            values.put(NOME_IMAGEM, post.getNomeImagem());
 
         /*
         String query = "SELECT * FROM " + TABLE_POST;
@@ -163,18 +164,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(ID, 1);
         */
 
-        // insert
-        long resposta = db.insert(TABLE_POST, null, values);
+            // insert
+            long resposta = db.insert(TABLE_POST, null, values);
             db.close();
 
-        if(resposta != -1){
-            Log.d(LOG, "POST SALVO NO BANCO");
-            return true;
-        }
-        else
-            return false;
-        }
-        catch(SQLException e){
+            if (resposta != -1) {
+                Log.d(LOG, "POST SALVO NO BANCO");
+                return true;
+            } else
+                return false;
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -192,7 +191,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(LOG, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
-        Log.d(LOG, "resultado da consulta de post pelo ID: "+c.getCount());
+        Log.d(LOG, "resultado da consulta de post pelo ID: " + c.getCount());
         Post post = new Post();
         if (c != null) {
             c.moveToFirst();
@@ -233,8 +232,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c != null && c.getCount() != 0) {
             c.moveToLast();
             idPost = c.getInt(c.getColumnIndex(ID));
-        }
-        else
+        } else
             idPost = 1;
 
         db.close();
@@ -251,51 +249,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Categoria categoria = new Categoria();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        try{
+        try {
 
-        String selectQuery = "SELECT * FROM " + TABLE_POST;
+            String selectQuery = "SELECT * FROM " + TABLE_POST;
 
-        Log.d(LOG, selectQuery);
+            Log.d(LOG, selectQuery);
 
-        Cursor c = db.rawQuery(selectQuery, null);
+            Cursor c = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
-        Log.d(LOG,"quantidade de posts cadastrados: "+c.getCount());
-        if (c != null) {
-            c.moveToFirst();
-            while(c.moveToNext()){
-                Post post = new Post();
+            // looping through all rows and adding to list
+            Log.d(LOG, "quantidade de posts cadastrados: " + c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+                while (c.moveToNext()) {
+                    Post post = new Post();
 
-                idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_POST)));
-                Log.d(LOG, "idUsuario: "+idUsuario);
-                idCategoria = c.getInt((c.getColumnIndex(ID_CATEGORIA_POST)));
+                    idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_POST)));
+                    Log.d(LOG, "idUsuario: " + idUsuario);
+                    idCategoria = c.getInt((c.getColumnIndex(ID_CATEGORIA_POST)));
 
 
-                usuario = findUsuarioByID(idUsuario);
-                categoria = findCategoriaByID(idCategoria);
+                    usuario = findUsuarioByID(idUsuario);
+                    categoria = findCategoriaByID(idCategoria);
 
-                post.setId(c.getInt(c.getColumnIndex(ID)));
-                post.setUsuario(usuario);
-                post.setCategoria(categoria);
-                post.setTitulo((c.getString(c.getColumnIndex(TITULO))));
-                post.setMediaVotos((c.getDouble(c.getColumnIndex(MEDIA_VOTOS))));
-                post.setCaminhoImagem((c.getString(c.getColumnIndex(CAMINHO_IMAGEM))));
-                post.setNomeImagem(c.getString(c.getColumnIndex(NOME_IMAGEM)));
+                    post.setId(c.getInt(c.getColumnIndex(ID)));
+                    post.setUsuario(usuario);
+                    post.setCategoria(categoria);
+                    post.setTitulo((c.getString(c.getColumnIndex(TITULO))));
+                    post.setMediaVotos((c.getDouble(c.getColumnIndex(MEDIA_VOTOS))));
+                    post.setCaminhoImagem((c.getString(c.getColumnIndex(CAMINHO_IMAGEM))));
+                    post.setNomeImagem(c.getString(c.getColumnIndex(NOME_IMAGEM)));
 
-                // add na lista de posts
-                listaPosts.add(post);
-                Log.d(LOG, "Adicionou post na lista");
+                    // add na lista de posts
+                    listaPosts.add(post);
+                    Log.d(LOG, "Adicionou post na lista");
+                }
+            } else {
+                Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
             }
-        }
-        else{
-            Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
-        }
-        db.close();
-        }
-        catch(SQLiteException e){
+            db.close();
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
         }
+        Collections.reverse(listaPosts);
         return listaPosts;
     }
 
@@ -305,16 +302,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Post> listaPostsCategoria = new ArrayList<Post>();
         listaPostsCategoria.clear();
 
-        try{
-            for(Post p: getAllPosts()){
-                if(p.getCategoria().getId() != idCategoria){
+        try {
+            for (Post p : getAllPosts()) {
+                if (p.getCategoria().getId() != idCategoria) {
                     listaPostsCategoria.add(p);
                 }
             }
             Log.d(LOG, "vai retornar lista de posts da categoria");
             return listaPostsCategoria;
-        }
-        catch(SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             return listaPostsCategoria;
         }
@@ -328,92 +324,106 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        try{
+        try {
 
             String selectQuery = "SELECT * FROM " + TABLE_POST + " WHERE " + ID_CATEGORIA_POST + " = " + idCategoria;
 
             Log.d(LOG, selectQuery);
 
             Cursor c = db.rawQuery(selectQuery, null);
-            Log.d(LOG, "numero de linhas da consulta pelos posts por categoria: "+c.getCount());
+            Log.d(LOG, "numero de linhas da consulta pelos posts por categoria: " + c.getCount());
             if (c != null) {
                 c.moveToFirst();
                 Post post;
-                while(c.moveToNext()){
+                while (c.moveToNext()) {
                     int idPost = c.getInt(c.getColumnIndex(ID));
                     post = findPostByID(idPost);
-                    Log.d(LOG, "titulo do post na busca pelas categorias: "+post.getTitulo());
+                    Log.d(LOG, "titulo do post na busca pelas categorias: " + post.getTitulo());
                     // add na lista de posts
                     listaPosts.add(post);
                 }
                 Log.d(LOG, "criou lista de posts por categoria");
-            }
-            else{
+            } else {
                 Log.d(LOG, "SELECT NOS POSTS RETORNOU 0 LINHAS");
             }
             db.close();
-        }
-        catch(SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
         }
         return listaPosts;
     }
 
+    public boolean deletePostByID(int idPost) {
+        //ver de mudar nome da tabelaaaa
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+
+            int resposta = db.delete(TABLE_POST, "ID=?", new String[]{String.valueOf(idPost)});
+            //significa que a query afetou alguma tupla
+            if (resposta != 0) {
+                Log.d(LOG, "deu certo a deleção, vai retornar true");
+                return true;
+            } else {
+                Log.d(LOG, "DEU ERRO AO DELETAR POST. vai retornar false");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     //************************************************** USUARIO DATABASE FUNCTIONS *************************************//
 
     public boolean persistUsuario(Usuario usuario) {
-        try{
-                boolean taSalvo = verificaUsuarioCadastrado(usuario.getEmail());
-                //se a resposta for false, significa que pode cadastrar o usuário
-                if(taSalvo == false){
-                    SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            boolean taSalvo = verificaUsuarioCadastrado(usuario.getEmail());
+            //se a resposta for false, significa que pode cadastrar o usuário
+            if (taSalvo == false) {
+                SQLiteDatabase db = this.getWritableDatabase();
 
-                    ContentValues values = new ContentValues();
-                    values.put(NOME_USUARIO, usuario.getNome());
-                    values.put(USERNAME, usuario.getUser());
-                    values.put(EMAIL, usuario.getEmail());
-                    values.put(SENHA, usuario.getSenha());
-                    values.put(EH_ADMIN, usuario.getEhAdmin());
+                ContentValues values = new ContentValues();
+                values.put(NOME_USUARIO, usuario.getNome());
+                values.put(USERNAME, usuario.getUser());
+                values.put(EMAIL, usuario.getEmail());
+                values.put(SENHA, usuario.getSenha());
+                values.put(EH_ADMIN, usuario.getEhAdmin());
 
-                    // insert
-                    long resposta = db.insert(TABLE_USUARIO, null, values);
-                    db.close();
-                    if(resposta == -1){
-                        Log.d(LOG, "SALVOU USUARIO NO BANCO. TUDO OK!");
-                        return true;
-                    }
-                    else{
-                        Log.d(LOG, "PROBLEMA NO PERSIST DO USUARIO NO BANCO.");
-                        return false;
-                    }
-
-                }
-                else{
-                    Log.d(LOG, "USUARIO JÁ CADASTRADO. retorna true!!");
+                // insert
+                long resposta = db.insert(TABLE_USUARIO, null, values);
+                db.close();
+                if (resposta == -1) {
+                    Log.d(LOG, "SALVOU USUARIO NO BANCO. TUDO OK!");
                     return true;
+                } else {
+                    Log.d(LOG, "PROBLEMA NO PERSIST DO USUARIO NO BANCO.");
+                    return false;
                 }
 
+            } else {
+                Log.d(LOG, "USUARIO JÁ CADASTRADO. retorna true!!");
+                return true;
+            }
 
-            }
-            catch(SQLException e){
-                e.printStackTrace();
-                return false;
-            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     //buscar usuário pelo ID
     public Usuario findUsuarioByID(int idUsuario) {
         SQLiteDatabase db = this.getReadableDatabase();
         Usuario usuario = new Usuario();
-        try{
+        try {
             String selectQuery = "SELECT  * FROM " + TABLE_USUARIO + " WHERE " + ID + " = " + idUsuario;
 
             Log.d(LOG, selectQuery);
 
             Cursor c = db.rawQuery(selectQuery, null);
-            Log.d(LOG, "resultado da consulta de usuarios: "+c.getCount());
+            Log.d(LOG, "resultado da consulta de usuarios: " + c.getCount());
             if (c != null) {
                 c.moveToFirst();
 
@@ -427,60 +437,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.close();
             return usuario;
-        }
-        catch (SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             return usuario;
         }
     }
 
-    public Usuario findUsuarioByEmail(String email){
+    public Usuario findUsuarioByEmail(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         Usuario usuario = null;
-        try{
-            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = '" + email +"'";
+        try {
+            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE " + EMAIL + " = '" + email + "'";
             Log.d(LOG, query);
             Cursor c = db.rawQuery(query, null);
             if (c.getCount() != 0) {
                 c.moveToFirst();
-                Log.d(LOG, "Entrou no if. Quantidade de usuarios com o email no login: "+c.getCount());
+                Log.d(LOG, "Entrou no if. Quantidade de usuarios com o email no login: " + c.getCount());
                 int id = c.getInt(c.getColumnIndex(ID));
                 usuario = findUsuarioByID(id);
                 db.close();
                 return usuario;
-            }
-            else{
+            } else {
                 Log.d(LOG, "Entrou no else. lista de usuários com esse email é vazia. retorona usuario nulo.");
                 db.close();
                 return usuario;
             }
-        }
-        catch (SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
             return usuario;
         }
     }
 
-    public boolean verificaUsuarioCadastrado(String email){
+    public boolean verificaUsuarioCadastrado(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         boolean resposta = true;
-        try{
-            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE "+ EMAIL + " = '" + email +"'";
+        try {
+            String query = "SELECT * FROM " + TABLE_USUARIO + " WHERE " + EMAIL + " = '" + email + "'";
             Log.d(LOG, query);
             Cursor c = db.rawQuery(query, null);
             if (c.getCount() != 0) {
                 Log.d(LOG, "Entrou no if. Existe usuário cadastrado com esse email. Retornou true");
                 return resposta;
-            }
-            else{
+            } else {
                 Log.d(LOG, "Entrou no else.  Não tem usuario com o email cadastrado. retorna false");
                 db.close();
                 resposta = false;
                 return resposta;
             }
-        }
-        catch (SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
         }
@@ -491,7 +496,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //************************************************** CATEGORIA DATABASE FUNCTIONS *************************************//
 
     public boolean persistCategoria(Categoria categoria) {
-        try{
+        try {
 
             SQLiteDatabase db = this.getWritableDatabase();
 
@@ -500,17 +505,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // insert
             long resposta = db.insert(TABLE_CATEGORIA, null, values);
-            if(resposta != -1){
+            if (resposta != -1) {
                 Log.d(LOG, "SALVOU CATEGORIA NO BANCO");
                 db.close();
                 return true;
-            }
-            else{
+            } else {
                 db.close();
                 return false;
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -518,29 +521,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // cadastra lista de categorias
     public boolean persistCategorias(ArrayList<Categoria> categorias) {
-        try{
+        try {
 
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
             long resposta = 0;
 
-            for(Categoria c : categorias){
+            for (Categoria c : categorias) {
                 values.put(NOME_CATEGORIA, c.getNome());
 
                 // insert
                 resposta = db.insert(TABLE_CATEGORIA, null, values);
 
-                if(resposta != -1)
-                    Log.d(LOG, "Salvou a categoria "+c.getNome()+" com id: "+c.getId());
+                if (resposta != -1)
+                    Log.d(LOG, "Salvou a categoria " + c.getNome() + " com id: " + c.getId());
                 else
                     return false;
             }
 
             db.close();
 
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -552,13 +554,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Categoria findCategoriaByID(int idCategoria) {
         SQLiteDatabase db = this.getReadableDatabase();
         Categoria categoria = new Categoria();
-        try{
+        try {
             String selectQuery = "SELECT * FROM " + TABLE_CATEGORIA + " WHERE " + ID + " = " + idCategoria;
 
             Log.d(LOG, selectQuery);
 
             Cursor c = db.rawQuery(selectQuery, null);
-            Log.d(LOG, "resultado da consulta de categorias: "+c.getCount());
+            Log.d(LOG, "resultado da consulta de categorias: " + c.getCount());
             if (c != null) {
                 c.moveToFirst();
 
@@ -568,8 +570,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.close();
             return categoria;
-        }
-        catch (SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
             return categoria;
@@ -579,7 +580,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //************************************************** REACOES DATABASE FUNCTIONS *************************************//
 
     public boolean persistReacao(Reacao reacao) {
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
@@ -590,17 +591,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             // insert
             long resposta = db.insert(TABLE_INTERACAO_USUARIO_POST, null, values);
-            if(resposta != -1){
+            if (resposta != -1) {
                 Log.d(LOG, "SALVOU REACAO NO BANCO");
                 db.close();
                 return true;
-            }
-            else{
+            } else {
                 db.close();
                 return false;
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -614,7 +613,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Post post = findPostByID(idPost);
         SQLiteDatabase db = this.getReadableDatabase();
 
-        try{
+        try {
             //ver de mudar nome da tabelaaaa
             String selectQuery = "SELECT * FROM " + TABLE_INTERACAO_USUARIO_POST + " WHERE " + ID_POST_INTERACAO + " = " + idPost;
 
@@ -622,11 +621,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             Cursor c = db.rawQuery(selectQuery, null);
 
-            Log.d(LOG,"quantidade de reacoes cadastradas: "+c.getCount());
+            Log.d(LOG, "quantidade de reacoes cadastradas: " + c.getCount());
             if (c != null) {
                 c.moveToFirst();
                 Reacao reacao;
-                while(c.moveToNext()){
+                while (c.moveToNext()) {
                     reacao = new Reacao();
 
                     //procura usuário autor de cada reação para setar no objeto reação
@@ -645,41 +644,89 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
                 }
-            }
-            else{
+            } else {
                 Log.d(LOG, "SELECT NAS REACOES RETORNOU 0 LINHAS");
             }
             db.close();
-        }
-        catch(SQLiteException e){
+        } catch (SQLiteException e) {
             e.printStackTrace();
             db.close();
         }
         //retorna lista de reações que alimentará o adapterReacoes
+        Collections.reverse(listaReacoes);
         return listaReacoes;
     }
 
-    public boolean deletePostByID(int idPost){
-        //ver de mudar nome da tabelaaaa
-        try {
-            SQLiteDatabase db = this.getReadableDatabase();
+    //carrega lista de reacoes pra mostrar na página inicial
+    public ArrayList<Reacao> getAllReacoes() {
 
-            int resposta = db.delete(TABLE_POST,"ID=?",new String[]{String.valueOf(idPost)});
-            //significa que a query afetou alguma tupla
-            if(resposta != 0) {
-                Log.d(LOG, "deu certo a deleção, vai retornar true");
-                return true;
+        ArrayList<Reacao> listaReacoes = new ArrayList<Reacao>();
+        int idUsuario, idPost;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        try {
+
+            String selectQuery = "SELECT * FROM " + TABLE_INTERACAO_USUARIO_POST;
+
+            Log.d(LOG, selectQuery);
+
+            Cursor c = db.rawQuery(selectQuery, null);
+
+            // looping through all rows and adding to list
+            Log.d(LOG, "quantidade de reacoes cadastrados: " + c.getCount());
+            if (c != null) {
+                c.moveToFirst();
+                Reacao reacao;
+                Usuario usuario;
+                Post post;
+                while (c.moveToNext()) {
+                    reacao = new Reacao();
+                    usuario = new Usuario();
+                    post = new Post();
+
+                    idUsuario = c.getInt((c.getColumnIndex(ID_USUARIO_INTERACAO)));
+                    Log.d(LOG, "idUsuario: " + idUsuario);
+                    idPost = c.getInt((c.getColumnIndex(ID_POST_INTERACAO)));
+
+                    usuario = findUsuarioByID(idUsuario);
+                    post = findPostByID(idPost);
+
+                    reacao.setId(c.getInt(c.getColumnIndex(ID)));
+                    reacao.setUsuario(usuario);
+                    reacao.setPost(post);
+                    reacao.setQtdEstrelas(c.getInt(c.getColumnIndex(QTD_ESTRELAS)));
+                    reacao.setComentario(c.getString(c.getColumnIndex(COMENTARIO)));
+
+                    // add na lista de posts
+                    listaReacoes.add(reacao);
+                    Log.d(LOG, "Adicionou reacao na lista de todas as reações");
+                }
+            } else {
+                Log.d(LOG, "SELECT NAS REACOES RETORNOU 0 LINHAS");
             }
-            else{
-                Log.d(LOG, "DEU ERRO AO DELETAR POST. vai retornar false");
-                return  false;
-            }
-        }
-        catch(SQLException e){
+            db.close();
+        } catch (SQLiteException e) {
             e.printStackTrace();
-            return false;
+            db.close();
         }
+        Collections.reverse(listaReacoes);
+        return listaReacoes;
     }
 
+    //pega total de reações de um post
+    public Integer getTotalReacoesByID(int idPost) {
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String selectQuery = "SELECT * FROM " + TABLE_INTERACAO_USUARIO_POST + " WHERE " + ID_POST_INTERACAO + " = " + idPost;;
+            Log.d(LOG, selectQuery);
+            Cursor c = db.rawQuery(selectQuery, null);
+            Log.d(LOG, "quantidade de reacoes desse post: " + c.getCount());
+            return c.getCount();
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 }

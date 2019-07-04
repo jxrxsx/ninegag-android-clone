@@ -3,7 +3,6 @@ package com.projetox.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,9 +11,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ActionProvider;
-import android.view.ContextMenu;
-import android.view.SubMenu;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,6 +28,7 @@ import android.widget.Toast;
 
 import com.projetox.Adapter.AdapterPost;
 import com.projetox.Model.Post;
+import com.projetox.Model.Reacao;
 import com.projetox.Model.Usuario;
 import com.projetox.R;
 import com.projetox.RecyclerItemClickListener;
@@ -44,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView recyclerDados;
     private ArrayList<Post> listaPostsMostrando = new ArrayList<Post>();
     private ArrayList<Post> listaBckpPosts = new ArrayList<Post>();
+    private ArrayList<Reacao> listaReacoes = new ArrayList<>();
     private AdapterPost adapter;
     private FloatingActionButton postUpload;
     private ImageView imageView;
@@ -97,15 +95,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 //chama tela de cadastro de posts
-                startActivity(new Intent(MainActivity.this, PostUploadActivity.class));
+                Intent intent = new Intent(MainActivity.this, PostUploadActivity.class);
+                intent.putExtra("idUsuarioLogado", usuarioLogado.getId()+"");
+                startActivity(intent);
             }
         });
 
         // Chama função que busca todos os posts cadastrados para mostrar na recycler view
         listaBckpPosts = dbHelper.getAllPosts();
         listaPostsMostrando = listaBckpPosts;
+
         // Configurar adapter
-        adapter = new AdapterPost(listaPostsMostrando);
+        adapter = new AdapterPost(listaPostsMostrando, listaReacoes);
         Log.d(TAG, "passou da dbHelper.getAllPosts()");
 
         // Configurar RecyclerView
@@ -127,31 +128,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerDados.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), recyclerDados, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        int idPostClicado = position+2;
-                        Post postTeste = dbHelper.findPostByID(idPostClicado);
-                        Toast.makeText(getApplicationContext(), "ID "+postTeste.getId()+ " e titulo do post: "+postTeste.getTitulo(), Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(MainActivity.this, PostViewActivity.class);
-                        intent.putExtra("idUsuarioLogado", usuarioLogado.getId()+"");
-                        intent.putExtra("idPostClicado", postTeste.getId()+"");
-                        startActivity(intent);
+                        // pega posição do post no recycler view
+                        int pos = recyclerDados.getChildAdapterPosition(view);
+
+                        // checa se o item nessa posição ainda existe
+                        if(pos != RecyclerView.NO_POSITION){
+                            Post postClicado = listaPostsMostrando.get(pos);
+                            Toast.makeText(getApplicationContext(), "ID "+postClicado.getId()+ " e titulo do post: "+postClicado.getTitulo(), Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(MainActivity.this, PostViewActivity.class);
+                            intent.putExtra("idUsuarioLogado", usuarioLogado.getId()+"");
+                            intent.putExtra("idPostClicado", postClicado.getId()+"");
+                            startActivity(intent);
+                        }
+                        else
+                            Toast.makeText(getApplicationContext(), "Post nessa posição já foi excluido", Toast.LENGTH_LONG).show();
+
                     }
                     @Override
                     public void onLongItemClick(View view, int position) {
                         //SE O USUARIO FOR ADMIN
-                        //ABRIR ALERT DIALOG PARA EXCLUIR POST
+                            //ABRIR ALERT DIALOG PARA EXCLUIR POST
                         //SENÃO
-                        //NÃO FAZ NADA
+                            //NÃO FAZ NADA
                         Toast.makeText(getApplicationContext(), "CLIQUE LOOOONGO", Toast.LENGTH_LONG).show();
-                        if(flagEhAdmin == true){
-                            final int idPostClicado = position+2;
+                        // pega posição do post no recycler view
+                        int pos = recyclerDados.getChildAdapterPosition(view);
+
+                        // checa se o item nessa posição ainda existe e se o usuário é adm
+                        if(flagEhAdmin == true && pos != RecyclerView.NO_POSITION){
+                            final Post postClicado = listaPostsMostrando.get(pos);
+                            Toast.makeText(getApplicationContext(), "ID "+postClicado.getId()+ " e titulo do post: "+postClicado.getTitulo(), Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mcontext);
                             alertDialogBuilder.setMessage("Esta ação é irreversível! Tem certeza que deseja excluir este post?");
                                 alertDialogBuilder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface arg0, int arg1) {
-                                        boolean resposta = dbHelper.deletePostByID(idPostClicado);
+                                        boolean resposta = dbHelper.deletePostByID(postClicado.getId());
                                         if(resposta) {
+                                            listaPostsMostrando = dbHelper.getAllPosts();
                                             adapter.notifyDataSetChanged();
+                                            recyclerDados.setAdapter(adapter);
                                             Toast.makeText(MainActivity.this, "Post excluído com sucesso!", Toast.LENGTH_SHORT).show();
                                         }
                                         else
@@ -220,7 +236,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            Toast.makeText(getApplicationContext(), "clicou em logout", Toast.LENGTH_LONG).show();
+            finish();
             return true;
         }
 
@@ -235,7 +253,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
         listaPostsMostrando.clear();
 
-        if (id == R.id.nav_dogo) {
+        if (id == R.id.nav_todas){
+            Toast.makeText(getApplicationContext(), "clicou na categoria dogo", Toast.LENGTH_LONG).show();
+            listaPostsMostrando = dbHelper.getAllPosts();
+        }
+        else if (id == R.id.nav_dogo) {
             Toast.makeText(getApplicationContext(), "clicou na categoria dogo", Toast.LENGTH_LONG).show();
             listaPostsMostrando = dbHelper.postsPorCategoria(1);
         } else if (id == R.id.nav_narutinho) {
@@ -268,12 +290,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else if (id == R.id.nav_stuff) {
             Toast.makeText(getApplicationContext(), "clicou na categoria stuff", Toast.LENGTH_LONG).show();
             listaPostsMostrando = dbHelper.postsPorCategoria(11);
-        }else if(id == R.id.nav_perfil){
-            Toast.makeText(getApplicationContext(), "clicou em perfil", Toast.LENGTH_LONG).show();
-            //chamar activity de editar perfil do usuario
-        }else if(id == R.id.nav_logout){
-            Toast.makeText(getApplicationContext(), "clicou em logout", Toast.LENGTH_LONG).show();
-            finish();
         }
 
         adapter = new AdapterPost(listaPostsMostrando);

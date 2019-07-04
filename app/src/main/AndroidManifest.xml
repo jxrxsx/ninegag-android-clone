@@ -17,15 +17,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.PostViewActivity"></activity>
-        <activity android:name=".Activity.PostUploadActivity"></activity>
+        <activity
+            android:name=".Activity.PostViewActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".Activity.PostUploadActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".Activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".Activity.LoginActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +42,8 @@
         </activity>
         <activity
             android:name=".Activity.SignupActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>

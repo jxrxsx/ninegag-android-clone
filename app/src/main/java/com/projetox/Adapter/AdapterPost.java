@@ -1,6 +1,5 @@
 package com.projetox.Adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -14,29 +13,30 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.projetox.Model.Reacao;
 import com.projetox.R;
 
 import com.projetox.Model.Post;
-import com.projetox.Model.Post;
-import com.projetox.R;
-import com.projetox.RecyclerItemClickListener;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> {
 
     private ArrayList<Post> listaPosts;
+    private ArrayList<Reacao> listaReacoes;
     private String TAG = "<<< AdapterPost >>>";
     private ImageView imagem;
 
 
     public AdapterPost(ArrayList<Post> listaPosts) {
+        this.listaPosts = listaPosts;
+    }
+
+    public AdapterPost(ArrayList<Post> listaPosts, ArrayList<Reacao> listaReacoes) {
         this.listaPosts = listaPosts;
     }
 
@@ -62,20 +62,6 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
         myViewHolder.user.setText(listaPosts.get(i).getUsuario().getUser());
         myViewHolder.titulo.setText(listaPosts.get(i).getTitulo());
         myViewHolder.categoria.setText(listaPosts.get(i).getCategoria().getNome());
-        myViewHolder.mediaVotos.setText(String.valueOf(listaPosts.get(i).getMediaVotos()));
-        myViewHolder.rbEstrelas.setRating(listaPosts.get(i).getMediaVotos().floatValue());
-
-        final int indiceEstrela = i;
-        myViewHolder.rbEstrelas.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d(TAG, "indice estrela: ");
-                return true;
-            }
-        });
-
-
-
     }
 
     @Override
@@ -100,8 +86,6 @@ public class AdapterPost extends RecyclerView.Adapter<AdapterPost.MyViewHolder> 
             categoria = itemView.findViewById(R.id.tvCategoria);
             titulo = itemView.findViewById(R.id.tvTitulo);
             imagem = itemView.findViewById(R.id.ivImagem);
-            rbEstrelas = itemView.findViewById(R.id.rbEstrelas);
-            mediaVotos = itemView.findViewById(R.id.tvMediaVotos);
 
         }
 

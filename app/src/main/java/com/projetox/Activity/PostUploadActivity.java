@@ -41,12 +41,11 @@ import java.io.IOException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-public abstract class PostUploadActivity extends AppCompatActivity {
+public class PostUploadActivity extends AppCompatActivity {
 
     private TextInputLayout tilTitulo;
     private EditText tvTitulo;
     private Spinner categoria;
-    private Switch ehSensivel;
     private ImageView imagemPost;
     private ImageButton btnSalvarPost;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -56,27 +55,26 @@ public abstract class PostUploadActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_upload);
-
         final DatabaseHelper dbHelper = new DatabaseHelper(getApplicationContext());
+        int idUsuarioLogado = Integer.parseInt(getIntent().getStringExtra("idUsuarioLogado"));
+        final Usuario usuarioLogado = dbHelper.findUsuarioByID(idUsuarioLogado);
 
         //associa elementos da tela de cadastro ao código java
         //btnAddImagem = findViewById(R.id.btnAddImagem);
         tilTitulo = findViewById(R.id.tilTitulo);
         tvTitulo = findViewById(R.id.edtTitulo);
         categoria = findViewById(R.id.spnCategoria);
-        ehSensivel = findViewById(R.id.swcSensivel);
         imagemPost = findViewById(R.id.ivImagemPost);
         btnSalvarPost = findViewById(R.id.btnSalvarPost);
 
         btnSalvarPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Usuario userLogado = dbHelper.findUsuarioByID(1);
                 int idCatSelecionada = categoria.getSelectedItemPosition() + 1;
                 Categoria categoriaSelec = dbHelper.findCategoriaByID(idCatSelecionada);
                 Post novoPost = new Post();
                 novoPost.setTitulo(tvTitulo.getText().toString());
-                novoPost.setUsuario(userLogado);
+                novoPost.setUsuario(usuarioLogado);
                 novoPost.setCategoria(categoriaSelec);
                 novoPost.setMediaVotos(new Double(0));
                 novoPost.setNomeImagem("post"+dbHelper.findLastPostID());

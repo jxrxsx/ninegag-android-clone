@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:text="username"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -34,7 +34,7 @@
             android:editable="false"
             android:gravity="right"
             android:text="categoria"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -51,43 +51,23 @@
         android:layout_width="match_parent"
         android:layout_height="235dp"
         android:layout_weight="5"
+        android:adjustViewBounds="true"
         android:scaleType="centerInside" />
 
     <LinearLayout
-        android:id="@+id/LLHorizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp">
+        android:layout_weight="5"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvMediaVotos"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvCliqueParaAvaliar"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="20dp"
-            android:text="média votos"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:visibility="invisible" />
-
-        <RatingBar
-            android:id="@+id/rbEstrelas"
-            style="@style/Widget.AppCompat.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:isIndicator="true"
-            android:numStars="5"
-            android:rating="3"
-            android:stepSize="1" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="151dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="5"
+            android:gravity="center"
+            android:text="Clique aqui para avaliar..."
+            android:textStyle="bold" />
 
     </LinearLayout>
 

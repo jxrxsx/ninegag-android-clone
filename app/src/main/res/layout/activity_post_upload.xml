@@ -55,7 +55,8 @@
         android:layout_height="309dp"
         android:adjustViewBounds="true"
         android:cropToPadding="true"
-        android:scaleType="centerInside"
+        android:foregroundGravity="center"
+        android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -74,43 +75,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:entries="@array/categorias"
-        app:layout_constraintBottom_toTopOf="@+id/swcSensivel"
+        app:layout_constraintBottom_toTopOf="@+id/ivImagemPost"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tilTitulo" />
-
-    <Switch
-        android:id="@+id/swcSensivel"
-        android:layout_width="69dp"
-        android:layout_height="37dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.976"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.356" />
-
-    <TextView
-        android:id="@+id/tvSensivel"
-        android:layout_width="222dp"
-        android:layout_height="31dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="70dp"
-        android:layout_marginRight="70dp"
-        android:text="Conteudo sensível?"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/swcSensivel"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spnCategoria" />
 
     <ImageButton
         android:id="@+id/btnSalvarPost"

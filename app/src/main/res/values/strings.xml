@@ -6,7 +6,10 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="label_enviar">Enviar</string>
+    <string name="label_cancelar">Cancelar</string>
 
+    <string name="menu_todas">TODAS</string>
     <string name="menu_dogo">DOGO</string>
     <string name="menu_narutinho">NARUTINHO</string>
     <string name="menu_got">GOT</string>
