@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         senhaLogin = findViewById(R.id.tvSenhaLogin);
         btnLogin = findViewById(R.id.btnEfetuaLogin);
 
+        // função para inserir categorias (estáticas) e usuário adm
         //fazInsercoesIniciais();
 
 

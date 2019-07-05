@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         boolean resposta = dbHelper.deletePostByID(postClicado.getId());
                                         if(resposta) {
                                             listaPostsMostrando = dbHelper.getAllPosts();
+                                            adapter = new AdapterPost(listaPostsMostrando);
                                             adapter.notifyDataSetChanged();
                                             recyclerDados.setAdapter(adapter);
                                             Toast.makeText(MainActivity.this, "Post excluído com sucesso!", Toast.LENGTH_SHORT).show();
