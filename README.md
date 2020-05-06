@@ -1,4 +1,4 @@
-# NINEGAG_SQLiteHelper
+# Sobre o projeto
 
 Implementação de um clone básico do app 9GAG para a disciplina "Tópicos em Novas Tecnologias" utilizando o Android SDK, Android Studio, SQLite OpenHelper.
 
